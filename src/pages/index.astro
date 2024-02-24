@@ -11,33 +11,33 @@ const pastClientLogos = import.meta.glob<{ default: ImageMetadata }>(
 
 const pastClients = [
   {
+    id: 'ontrack',
     name: 'OnTrack Retail',
-    src: pastClientLogos['/src/images/past-clients/ontrack.png'](),
     href: 'https://ontrackretail.co.uk',
   },
   {
+    id: 'pearson',
     name: 'Pearson',
-    src: pastClientLogos['/src/images/past-clients/pearson.png'](),
     href: 'https://pearson.com',
   },
   {
+    id: 'bcgdv',
     name: 'BCG: Digital Ventures',
-    src: pastClientLogos['/src/images/past-clients/bcgdv.png'](),
     href: 'https://bcgdv.com',
   },
   {
+    id: 'hof',
     name: 'House of Fraser',
-    src: pastClientLogos['/src/images/past-clients/hof.png'](),
     href: 'https://houseoffraser.co.uk',
   },
   {
+    id: 'ft',
     name: 'Financial Times',
-    src: pastClientLogos['/src/images/past-clients/ft.png'](),
     href: 'https://ft.com',
   },
   {
+    id: 'eventsforce',
     name: 'Eventsforce',
-    src: pastClientLogos['/src/images/past-clients/eventsforce.png'](),
     href: 'https://eventsforce.com',
   },
 ]
@@ -102,7 +102,16 @@ const pastClients = [
                 Previously worked with
               </p>
               <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
-                {pastClients.map((client) => <ClientLogoLink {...client} />)}
+                {
+                  pastClients.map((client) => (
+                    <ClientLogoLink
+                      {...client}
+                      src={pastClientLogos[
+                        `/src/images/past-clients/${client.id}.png`
+                      ]()}
+                    />
+                  ))
+                }
               </div>
             </div>
           </div>
