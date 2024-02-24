@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets"
+import { Image } from 'astro:assets'
 
 const { href, name, src } = Astro.props
 ---
@@ -13,7 +13,8 @@ const { href, name, src } = Astro.props
   <Image class="max-h-7 max-w-xs object-contain" {src} alt={name} />
   <div
     class="absolute inset-0 hidden bg-slate-500 group-hover:block group-hover:bg-opacity-20"
-  ></div>
+  >
+  </div>
   <svg
     class="absolute top-1 right-1 hidden h-5 w-5 text-white group-hover:block"
     xmlns="http://www.w3.org/2000/svg"
