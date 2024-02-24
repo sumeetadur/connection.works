@@ -1,17 +1,107 @@
 ---
+import { Image } from 'astro:assets'
+import dayjs from 'dayjs'
+import BgImg from '@images/bg.png'
+import RTLogo from '@images/current-clients/rt.png'
+import ClientLogoLink from '@components/ClientLogoLink.astro'
 
+const pastClientLogos = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/images/past-clients/*.png'
+)
+
+const pastClients = [
+  {
+    name: 'OnTrack Retail',
+		src: pastClientLogos['/src/images/past-clients/ontrack.png'](),
+    href: 'https://ontrackretail.co.uk',
+  },
+  {
+		name: 'Pearson',
+		src: pastClientLogos['/src/images/past-clients/pearson.png'](),
+    href: 'https://pearson.com',
+  },
+  {
+		name: 'BCG: Digital Ventures',
+		src: pastClientLogos['/src/images/past-clients/bcgdv.png'](),
+    href: 'https://bcgdv.com',
+  },
+  {
+		name: 'House of Fraser',
+		src: pastClientLogos['/src/images/past-clients/hof.png'](),
+    href: 'https://houseoffraser.co.uk',
+  },
+  {
+		name: 'Financial Times',
+		src: pastClientLogos['/src/images/past-clients/ft.png'](),
+    href: 'https://ft.com',
+  },
+  {
+		name: 'Eventsforce',
+		src: pastClientLogos['/src/images/past-clients/eventsforce.png'](),
+    href: 'https://eventsforce.com',
+  },
+]
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content="Connection Works Web Development" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-		<title>Astro</title>
+		<title>Connection Works</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+  <div class="relative h-full min-h-screen">
+    <div class="absolute inset-x-0 bottom-0 h-full bg-slate-800" />
+    <div class="relative h-full min-h-screen pb-12 sm:pb-0 sm:overflow-hidden">
+      <div class="absolute inset-0">
+        <Image
+          class="h-full w-full object-cover object-top"
+          src={BgImg}
+          alt="Laptop on desk at night"
+        />
+      </div>
+      <div class="relative flex h-full min-h-screen flex-col items-center justify-center">
+        <div class="space-y-6">
+          <div class="mx-auto rounded-lg max-w-max bg-black p-4 opacity-75">
+            <h1 class="text-center text-4xl font-semibold tracking-tight sm:text-5xl">
+              <span class="block text-white">Connection Works</span>
+            </h1>
+            <p class="mx-auto mt-2 max-w-lg text-center text-xl text-brown-400 sm:mt-4 sm:max-w-3xl sm:text-2xl">
+              Web Development
+            </p>
+          </div>
+          <div class="mx-auto max-w-md bg-black rounded-lg p-4 opacity-75">
+            <p class="text-center text-base font-semibold uppercase tracking-wider text-brown-400">
+              Currently working with
+            </p>
+            <div class="mt-4">
+              <ClientLogoLink
+                name="Remote Tech"
+                src={RTLogo}
+                href="https://remote-tech.co.uk"
+              />
+            </div>
+          </div>
+          <div class="mx-auto max-w-7xl bg-black rounded-lg p-4 opacity-75">
+            <p class="text-center text-base font-semibold uppercase tracking-wider text-brown-400">
+              Previously worked with
+            </p>
+            <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+              {pastClients.map((client) => (
+                <ClientLogoLink {...client} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="absolute right-0 bottom-0 bg-black p-1 text-xs text-white opacity-50">
+        &copy; {dayjs().format('YYYY')} Connection Works Ltd. All Rights
+        Reserved.
+      </div>
+    </div>
+  </div>
 	</body>
 </html>
