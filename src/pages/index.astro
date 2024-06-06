@@ -5,10 +5,25 @@ import ClientLogoLink from '@components/ClientLogoLink.astro'
 import BgImg from '@images/bg.png'
 import RTLogo from '@images/current-clients/rt.png'
 
+const currentClientLogos = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/images/current-clients/*.png'
+)
+const currentClients = [
+  {
+    id: 'rt',
+    name: 'Remote Tech',
+    href: 'https://remote-tech.co.uk',
+  },
+  {
+    id: 'bds',
+    name: 'Bathroom Design Shop',
+    href: 'https://bathroomdesignshop.co.uk',
+  },
+]
+
 const pastClientLogos = import.meta.glob<{ default: ImageMetadata }>(
   '/src/images/past-clients/*.png'
 )
-
 const pastClients = [
   {
     id: 'ontrack',
@@ -29,16 +44,6 @@ const pastClients = [
     id: 'hof',
     name: 'House of Fraser',
     href: 'https://houseoffraser.co.uk',
-  },
-  {
-    id: 'ft',
-    name: 'Financial Times',
-    href: 'https://ft.com',
-  },
-  {
-    id: 'eventsforce',
-    name: 'Eventsforce',
-    href: 'https://eventsforce.com',
   },
 ]
 ---
@@ -87,12 +92,17 @@ const pastClients = [
               >
                 Currently working with
               </p>
-              <div class="mt-4">
-                <ClientLogoLink
-                  name="Remote Tech"
-                  src={RTLogo}
-                  href="https://remote-tech.co.uk"
-                />
+              <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+                {
+                  currentClients.map((client) => (
+                    <ClientLogoLink
+                      {...client}
+                      src={currentClientLogos[
+                        `/src/images/current-clients/${client.id}.png`
+                      ]()}
+                    />
+                  ))
+                }
               </div>
             </div>
             <div class="mx-auto max-w-7xl bg-black rounded-lg p-4 opacity-75">
