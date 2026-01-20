@@ -1,9 +1,8 @@
 ---
 import { Image } from 'astro:assets'
-import dayjs from 'dayjs'
 import ClientLogoLink from '@components/ClientLogoLink.astro'
+import CurrentYear from '@components/CurrentYear.astro'
 import BgImg from '@images/bg.png'
-import RTLogo from '@images/current-clients/rt.png'
 
 const currentClientLogos = import.meta.glob<{ default: ImageMetadata }>(
   '/src/images/current-clients/*.png'
@@ -129,7 +128,7 @@ const pastClients = [
         <div
           class="absolute right-0 bottom-0 bg-black p-1 text-xs text-white opacity-50"
         >
-          &copy; {dayjs().format('YYYY')} Connection Works Ltd. All Rights Reserved.
+          &copy; <CurrentYear /> Connection Works Ltd. All Rights Reserved.
         </div>
       </div>
     </div>

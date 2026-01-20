@@ -17,9 +17,6 @@ importers:
       astro:
         specifier: ^5.16.11
         version: 5.16.11(jiti@1.21.0)(rollup@4.55.2)(typescript@5.3.3)(yaml@2.8.2)
-      dayjs:
-        specifier: ^1.11.10
-        version: 1.11.10
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.1
@@ -1023,9 +1020,6 @@ packages:
   csso@5.0.5:
     resolution: {integrity: sha512-0LrrStPOdJj+SPCCrGhzryycLjwcgUSHBtxNA8aIDxf0GLsRh1cKYhB00Gd1lDOS4yGH69+SNn13+TWbVHETFQ==}
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0, npm: '>=7.0.0'}
-
-  dayjs@1.11.10:
-    resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -3325,8 +3319,6 @@ snapshots:
   csso@5.0.5:
     dependencies:
       css-tree: 2.2.1
-
-  dayjs@1.11.10: {}
 
   debug@4.4.3:
     dependencies:
