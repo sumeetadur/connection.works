@@ -2,6 +2,8 @@
 title: L8Log
 client: Remote Tech
 dateRange: November 2019 - January 2026
+startDate: November 2019
+endDate: January 2026
 role: Senior Front-End Engineer (Contract)
 summary: L8Log is a comprehensive IoT remote monitoring and compliance system for Legionella control. I led the front-end development and was primarily responsible for architectural decisions, UI/UX implementation, and technology migrations. I built and maintained a large React application focused on operational workflows, access control, performance, and reliability
 nda: true
@@ -35,38 +37,6 @@ media:
   #   alt: Walkthrough showing dashboard donut chart filtering, organisation map, and asset charts
   #   caption: Dashboard + organisation map + asset charts (read-only walkthrough)
   - kind: image
-    src: /portfolio/l8log-web/screens/p01-nav-information-architecture.png
-    alt: Navigation and information architecture
-    caption: Navigation and information architecture
-  - kind: image
-    src: /portfolio/l8log-web/screens/p02-permissioned-actions.png
-    alt: Permissioned actions and gated controls
-    caption: Permissioned actions and gated controls (** only shows for authorised users)
-  - kind: image
-    src: /portfolio/l8log-web/screens/p03-no-access-state.png
-    alt: No access state for a protected area
-    caption: No access state for a protected area
-  # - kind: image
-  #   src: /portfolio/l8log-web/screens/p04-api-error-envelope.png
-  #   alt: Consistent API error UI
-  #   caption: Consistent API error UI
-  - kind: image
-    src: /portfolio/l8log-web/screens/p05-table-filters-search.png
-    alt: Data table filters and search
-    caption: Data table filters and search
-  - kind: image
-    src: /portfolio/l8log-web/screens/p06-loading-skeletons.png
-    alt: Loading skeletons and placeholders
-    caption: Loading skeletons and placeholders
-  - kind: image
-    src: /portfolio/l8log-web/screens/p07-empty-state.png
-    alt: Empty state and blank slate UI
-    caption: Empty state and blank slate UI
-  - kind: image
-    src: /portfolio/l8log-web/screens/p08-detail-view.png
-    alt: Detail view with key metadata
-    caption: Detail view with key metadata
-  - kind: image
     src: /portfolio/l8log-web/screens/p09-dashboard-overview.png
     alt: Dashboard overview with charts
     caption: Dashboard overview with charts
@@ -79,9 +49,41 @@ media:
     alt: Map view with markers
     caption: Map view with markers
   - kind: image
+    src: /portfolio/l8log-web/screens/p05-table-filters-search.png
+    alt: Data table filters and search
+    caption: Data table filters and search
+  - kind: image
+    src: /portfolio/l8log-web/screens/p08-detail-view.png
+    alt: Detail view with key metadata
+    caption: Detail view with key metadata
+  - kind: image
+    src: /portfolio/l8log-web/screens/p06-loading-skeletons.png
+    alt: Loading skeletons and placeholders
+    caption: Loading skeletons and placeholders
+  - kind: image
+    src: /portfolio/l8log-web/screens/p01-nav-information-architecture.png
+    alt: Navigation and information architecture
+    caption: Navigation and information architecture
+  # - kind: image
+  #   src: /portfolio/l8log-web/screens/p02-permissioned-actions.png
+  #   alt: Permissioned actions and gated controls
+  #   caption: Permissioned actions and gated controls (** only shows for authorised users)
+  # - kind: image
+  #   src: /portfolio/l8log-web/screens/p04-api-error-envelope.png
+  #   alt: Consistent API error UI
+  #   caption: Consistent API error UI
+  - kind: image
     src: /portfolio/l8log-web/screens/p12-responsive-layout.png
     alt: Responsive layout at mobile width
     caption: Responsive layout at mobile width
+  - kind: image
+    src: /portfolio/l8log-web/screens/p07-empty-state.png
+    alt: Empty state and blank slate UI
+    caption: Empty state and blank slate UI
+  - kind: image
+    src: /portfolio/l8log-web/screens/p03-no-access-state.png
+    alt: No access state for a protected area
+    caption: No access state for a protected area
 links:
   - href: "https://l8log.com/remote"
     label: "L8Log Remote Monitoring"

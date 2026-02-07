@@ -6,6 +6,7 @@ import { render } from 'astro:content'
 import BgImg from '../../images/bg.png'
 import ProjectMedia from '../../components/ProjectMedia.astro'
 import ProjectCodeAccess from '../../components/ProjectCodeAccess.astro'
+import ExternalLinkIcon from '../../components/ExternalLinkIcon.astro'
 
 export async function getStaticPaths() {
   const entries = await getCollection('projects')
@@ -34,7 +35,7 @@ const { Content } = await render(entry)
     </div>
 
     <article class="relative mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div class="max-w-3xl">
+      <div class="mx-auto max-w-3xl">
       <a class="text-sm text-slate-300 hover:text-white" href="/portfolio">
         Back to portfolio
       </a>
@@ -66,6 +67,7 @@ const { Content } = await render(entry)
               aria-label={`${l.label} (opens in a new tab)`}
             >
               {l.label}
+              <ExternalLinkIcon class="h-4 w-4 inline-block ml-1" />
             </a>
           ))}
         </div>

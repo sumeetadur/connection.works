@@ -1,7 +1,9 @@
 ---
 title: Bathroom Design Shop
 client: Bathroom Design Widmer End
-dateRange: May 2025 - Feb 2025
+dateRange: May 2024 - Feb 2025
+startDate: May 2024
+endDate: Feb 2025
 role: Lead Front-End Engineer (Contract)
 summary: Delivered customer-facing web experiences with a focus on performance, accessibility, and conversion-oriented UI
 nda: false

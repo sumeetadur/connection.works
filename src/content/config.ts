@@ -6,6 +6,8 @@ import { defineCollection, z } from 'astro:content'
     title: z.string(),
     client: z.string(),
     dateRange: z.string(),
+    startDate: z.string(),
+    endDate: z.string(),
     role: z.string(),
     summary: z.string(),
     nda: z.boolean().default(false),

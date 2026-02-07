@@ -3,6 +3,7 @@ import { Image } from 'astro:assets'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import BgImg from '../images/bg.png'
 import { siteConfig } from '../siteConfig'
+import ExternalLinkIcon from '../components/ExternalLinkIcon.astro'
 ---
 
 <BaseLayout title="Contact" description="Contact Connection Works">
@@ -17,7 +18,7 @@ import { siteConfig } from '../siteConfig'
     </div>
 
     <section class="relative mx-auto max-w-6xl px-4 py-10 sm:px-6">
-      <div class="max-w-3xl">
+      <div class="mx-auto max-w-3xl">
       <h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
         Contact
       </h1>
@@ -43,6 +44,7 @@ import { siteConfig } from '../siteConfig'
             aria-label="LinkedIn (opens in a new tab)"
           >
             LinkedIn
+            <ExternalLinkIcon class="h-4 w-4 inline-block ml-1" />
           </a>
           <a
             class="rounded-lg bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200"
@@ -52,6 +54,7 @@ import { siteConfig } from '../siteConfig'
             aria-label="GitHub (opens in a new tab)"
           >
             GitHub
+            <ExternalLinkIcon class="h-4 w-4 inline-block ml-1" />
           </a>
         </div>
       </div>
