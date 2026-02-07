@@ -1,5 +1,3 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
 import { generateKeyPairSync } from 'node:crypto'
 
 type KeyPairStore = {
@@ -8,34 +6,37 @@ type KeyPairStore = {
   createdAt: string
 }
 
-function resolveKeyPath() {
-  return join(process.cwd(), '.data', 'code-access', 'keypair.json')
+const ENV_KEY_PUBLIC = 'CODE_ACCESS_PUBLIC_KEY'
+const ENV_KEY_PRIVATE = 'CODE_ACCESS_PRIVATE_KEY'
+const ENV_KEY_CREATED = 'CODE_ACCESS_KEY_CREATED'
+
+function encodeKey(jwk: JsonWebKey): string {
+  return Buffer.from(JSON.stringify(jwk)).toString('base64')
 }
 
-async function readKeyStore(): Promise<KeyPairStore | null> {
-  const filePath = resolveKeyPath()
+function decodeKey(encoded: string): JsonWebKey {
+  return JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'))
+}
+
+function readFromEnv(): KeyPairStore | null {
+  const publicB64 = process.env[ENV_KEY_PUBLIC]
+  const privateB64 = process.env[ENV_KEY_PRIVATE]
+  const createdAt = process.env[ENV_KEY_CREATED]
+
+  if (!publicB64 || !privateB64 || !createdAt) return null
+
   try {
-    const raw = await readFile(filePath, 'utf8')
-    const parsed = JSON.parse(raw)
-    if (!parsed?.privateJwk || !parsed?.publicJwk) return null
-    return parsed
+    return {
+      publicJwk: decodeKey(publicB64),
+      privateJwk: decodeKey(privateB64),
+      createdAt,
+    }
   } catch {
     return null
   }
 }
 
-async function writeKeyStore(data: KeyPairStore): Promise<void> {
-  const filePath = resolveKeyPath()
-  await mkdir(dirname(filePath), { recursive: true })
-  const tmpPath = `${filePath}.tmp`
-  await writeFile(tmpPath, JSON.stringify(data, null, 2) + '\n', 'utf8')
-  await rename(tmpPath, filePath)
-}
-
-export async function getOrCreateCodeAccessKeyPair(): Promise<KeyPairStore> {
-  const existing = await readKeyStore()
-  if (existing) return existing
-
+function generateNewKeyPair(): KeyPairStore {
   const { privateKey, publicKey } = generateKeyPairSync('ec', {
     namedCurve: 'prime256v1',
   })
@@ -43,12 +44,34 @@ export async function getOrCreateCodeAccessKeyPair(): Promise<KeyPairStore> {
   const privateJwk = privateKey.export({ format: 'jwk' }) as JsonWebKey
   const publicJwk = publicKey.export({ format: 'jwk' }) as JsonWebKey
 
-  const created: KeyPairStore = {
+  return {
     privateJwk,
     publicJwk,
     createdAt: new Date().toISOString(),
   }
+}
 
-  await writeKeyStore(created)
+export async function getOrCreateCodeAccessKeyPair(): Promise<KeyPairStore> {
+  // Try to read from environment variables first
+  const existing = readFromEnv()
+  if (existing) return existing
+
+  // Generate new keypair - in production, this should be saved to env vars
+  // For Netlify, you'll need to set these via the Netlify UI or CLI:
+  // netlify env:set CODE_ACCESS_PRIVATE_KEY "$(base64 -i <(echo '{...}'))"
+  // netlify env:set CODE_ACCESS_PUBLIC_KEY "$(base64 -i <(echo '{...}'))"
+  // netlify env:set CODE_ACCESS_KEY_CREATED "2024-..."
+  const created = generateNewKeyPair()
+
+  // Log instructions for setting env vars (only in build/startup)
+  if (process.env.NODE_ENV === 'development' || process.env.NETLIFY_LOCAL) {
+    // In dev mode without env vars, we generate each time (tokens won't persist)
+    // This is fine for development testing
+    console.warn(
+      '[codeAccessKeyPair] No CODE_ACCESS_PRIVATE_KEY/PUBLIC_KEY env vars set. ' +
+      'Generating new keypair. For production, set these env vars in Netlify.'
+    )
+  }
+
   return created
 }

@@ -1,5 +1,4 @@
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
+import { getStore } from '@netlify/blobs'
 import { randomBytes } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 
@@ -32,16 +31,20 @@ type TokenStoreData = {
   projects: Record<string, CodeAccessProjectRecord>
 }
 
+const STORE_KEY = 'code-access-tokens'
+
 const defaultStore: TokenStoreData = { tokens: [], projects: {} }
 
-function resolveStorePath() {
-  return join(process.cwd(), '.data', 'code-access', 'tokens.json')
+function getBlobStore() {
+  return getStore({ name: 'code-access' })
 }
 
 async function readStore(): Promise<TokenStoreData> {
-  const filePath = resolveStorePath()
   try {
-    const raw = await readFile(filePath, 'utf8')
+    const store = getBlobStore()
+    const raw = await store.get(STORE_KEY)
+    if (!raw) return defaultStore
+
     const parsed = JSON.parse(raw)
     if (!parsed || typeof parsed !== 'object') return defaultStore
     if (!Array.isArray(parsed.tokens)) return defaultStore
@@ -53,11 +56,8 @@ async function readStore(): Promise<TokenStoreData> {
 }
 
 async function writeStore(data: TokenStoreData): Promise<void> {
-  const filePath = resolveStorePath()
-  await mkdir(dirname(filePath), { recursive: true })
-  const tmpPath = `${filePath}.tmp`
-  await writeFile(tmpPath, JSON.stringify(data, null, 2) + '\n', 'utf8')
-  await rename(tmpPath, filePath)
+  const store = getBlobStore()
+  await store.set(STORE_KEY, JSON.stringify(data, null, 2))
 }
 
 function base64Url(bytes: Uint8Array) {
