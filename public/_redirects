@@ -1,6 +1,3 @@
-# Netlify-style redirects for static hosting
-# Ensure client-side routing and deep links return the correct status.
-
-/portfolio/*   /portfolio/index.html   200
-
-/*            /404.html               404
+# Netlify-style redirects
+# Server-side rendered routes (/admin/*, /api/*) are handled by Netlify Functions
+# Static routes are served directly from their HTML files without any redirects needed
