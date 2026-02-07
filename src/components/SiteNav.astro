@@ -1,0 +1,48 @@
+---
+import { siteConfig } from '../siteConfig'
+
+const pathname = Astro.url.pathname
+const items = [
+  { href: '/', label: 'Home' },
+  { href: '/portfolio', label: 'Portfolio' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+]
+---
+
+<nav aria-label="Primary" class="w-full">
+  <div class="mx-auto flex max-w-6xl items-center justify-center px-4 py-4 sm:px-6">
+    <!-- <a href="/" class="inline-flex items-center gap-2 font-semibold tracking-tight text-white">
+      <span class="sr-only">{siteConfig.siteName}</span>
+      <span aria-hidden="true">{siteConfig.siteName}</span>
+    </a> -->
+
+    <div class="flex items-center gap-2">
+      {items.map((item) => {
+        const isActive =
+          pathname === item.href ||
+          (item.href !== '/' && pathname.startsWith(`${item.href}/`))
+        return (
+          <a
+            href={item.href}
+            aria-current={isActive ? 'page' : undefined}
+            class={`rounded-md px-3 py-2 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200 ${
+              isActive
+                ? 'bg-white/10 text-white'
+                : 'text-slate-200 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            {item.label}
+          </a>
+        )
+      })}
+
+      <a
+        href="/contact"
+        class="ml-1 hidden rounded-md bg-brown-900/40 px-3 py-2 text-sm font-semibold text-brown-100 transition hover:bg-brown-900/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200 sm:inline-flex"
+      >
+        Hire me
+      </a>
+    </div>
+  </div>
+</nav>

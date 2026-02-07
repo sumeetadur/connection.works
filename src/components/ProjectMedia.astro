@@ -1,0 +1,340 @@
+---
+const { media, nda } = Astro.props as {
+  nda?: boolean
+  media: Array<{
+    kind: 'image' | 'video'
+    src?: string
+    alt: string
+    caption?: string
+    width?: number
+    height?: number
+    tracks?: Array<{
+      src: string
+      srclang: string
+      label: string
+      default?: boolean
+    }>
+    transcript?: string
+  }>
+}
+
+const publishedMedia = media.filter(
+  (m) => typeof m.src === 'string' && m.src.trim() !== ''
+)
+
+const videos = publishedMedia.filter((m) => m.kind === 'video')
+const images = publishedMedia.filter((m) => m.kind === 'image')
+
+const hasAnySrc = publishedMedia.length > 0
+---
+
+<section aria-label="Project media" class="mt-10">
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-base font-semibold text-white">Media</h2>
+    {nda && !hasAnySrc ? (
+      <span class="rounded-full bg-brown-900/40 px-3 py-1 text-xs font-semibold text-brown-100">
+        Redacted / available privately
+      </span>
+    ) : null}
+  </div>
+
+  {!hasAnySrc ? (
+    <div class="mt-4 rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300">
+      Media is available, but not published here due to NDA and privacy constraints.
+    </div>
+  ) : (
+    <div class="mt-4 space-y-10">
+      {videos.length > 0 ? (
+        <div>
+          <h3 class="text-sm font-semibold text-slate-200">Videos</h3>
+          <div class="mt-4 grid gap-6 sm:grid-cols-2">
+            {videos.map((m) => (
+              <figure class="overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                <div class="bg-black/40">
+                  <button
+                    type="button"
+                    class="block w-full text-left"
+                    data-media-preview-trigger
+                    data-kind="video"
+                    data-src={m.src}
+                    data-alt={m.alt}
+                    data-caption={m.caption ?? m.alt}
+                    data-tracks={m.tracks ? JSON.stringify(m.tracks) : undefined}
+                    aria-label={`Preview video: ${(m.caption ?? m.alt).trim()}`}
+                  >
+                    <video
+                      src={m.src}
+                      aria-label={m.caption ?? m.alt}
+                      playsinline
+                      preload="metadata"
+                      class="aspect-video h-auto w-full object-cover"
+                    >
+                      {m.tracks?.map((t) => (
+                        <track
+                          src={t.src}
+                          kind="captions"
+                          srclang={t.srclang}
+                          label={t.label}
+                          default={t.default}
+                        />
+                      ))}
+                    </video>
+                  </button>
+                </div>
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
+                  <figcaption class="text-sm text-slate-300">
+                    {m.caption ?? m.alt}
+                  </figcaption>
+                  <div class="flex shrink-0 items-center gap-2">
+                    <button
+                      type="button"
+                      class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                      data-media-preview-trigger
+                      data-kind="video"
+                      data-src={m.src}
+                      data-alt={m.alt}
+                      data-caption={m.caption ?? m.alt}
+                      data-tracks={m.tracks ? JSON.stringify(m.tracks) : undefined}
+                    >
+                      Preview
+                    </button>
+                    <a
+                      href={m.src}
+                      class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Open video: ${(m.caption ?? m.alt).trim()} (opens in a new tab)`}
+                    >
+                      Open
+                    </a>
+                  </div>
+                </div>
+
+                {m.transcript ? (
+                  <div class="border-t border-white/10 px-4 py-3">
+                    <details class="text-sm text-slate-300">
+                      <summary class="cursor-pointer select-none font-semibold text-white">
+                        Transcript
+                      </summary>
+                      <div class="mt-3 whitespace-pre-wrap text-sm text-slate-300">
+                        {m.transcript}
+                      </div>
+                    </details>
+                  </div>
+                ) : null}
+              </figure>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {images.length > 0 ? (
+        <div>
+          <h3 class="text-sm font-semibold text-slate-200">Screenshots</h3>
+          <div class="mt-4 grid gap-6 sm:grid-cols-2">
+            {images.map((m) => (
+              <figure class="overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                <div class="bg-black/40">
+                  <button
+                    type="button"
+                    class="block w-full text-left"
+                    data-media-preview-trigger
+                    data-kind="image"
+                    data-src={m.src}
+                    data-alt={m.alt}
+                    data-caption={m.caption ?? m.alt}
+                    aria-label={`Preview screenshot: ${(m.caption ?? m.alt).trim()}`}
+                  >
+                    <img
+                      src={m.src}
+                      alt={m.alt}
+                      loading="lazy"
+                      decoding="async"
+                      class="aspect-video h-auto w-full object-cover"
+                    />
+                  </button>
+                </div>
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
+                  <figcaption class="text-sm text-slate-300">
+                    {m.caption ?? m.alt}
+                  </figcaption>
+                  <button
+                    type="button"
+                    class="shrink-0 rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                    data-media-preview-trigger
+                    data-kind="image"
+                    data-src={m.src}
+                    data-alt={m.alt}
+                    data-caption={m.caption ?? m.alt}
+                  >
+                    Preview
+                  </button>
+                  <a
+                    href={m.src}
+                    class="shrink-0 rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open screenshot: ${(m.caption ?? m.alt).trim()} (opens in a new tab)`}
+                  >
+                    Open
+                  </a>
+                </div>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <dialog
+        class="w-[min(100vw-2rem,72rem)] rounded-xl border border-white/10 bg-slate-950 p-0 text-slate-100 backdrop:bg-black/70"
+        aria-label="Media preview"
+        data-media-preview-dialog
+      >
+        <div class="flex items-start justify-between gap-4 border-b border-white/10 px-4 py-3">
+          <div class="min-w-0">
+            <div class="text-sm font-semibold text-white" data-media-preview-title></div>
+          </div>
+          <form method="dialog">
+            <button
+              type="submit"
+              class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+              aria-label="Close preview"
+              data-media-preview-close
+            >
+              Close
+            </button>
+          </form>
+        </div>
+        <div class="p-4" data-media-preview-body></div>
+      </dialog>
+
+      <script type="module">
+        const scope = document.querySelector('section[aria-label="Project media"]')
+        if (!scope) throw new Error('Media scope not found')
+
+        const dialog = scope.querySelector('[data-media-preview-dialog]')
+        const body = scope.querySelector('[data-media-preview-body]')
+        const title = scope.querySelector('[data-media-preview-title]')
+        const closeBtn = scope.querySelector('[data-media-preview-close]')
+
+        let lastTrigger = null
+
+        function openDialog() {
+          if (!dialog) return
+          if (typeof dialog.showModal === 'function') {
+            dialog.showModal()
+            closeBtn?.focus()
+            return
+          }
+          dialog.setAttribute('open', '')
+          closeBtn?.focus()
+        }
+
+        function closeDialog() {
+          if (!dialog) return
+          if (typeof dialog.close === 'function') {
+            dialog.close()
+            return
+          }
+          dialog.removeAttribute('open')
+        }
+
+        function safeJsonParse(value) {
+          if (!value) return null
+          try {
+            return JSON.parse(value)
+          } catch {
+            return null
+          }
+        }
+
+        function clearBody() {
+          if (!body) return
+          body.innerHTML = ''
+        }
+
+        function openMediaPreview(trigger) {
+          if (!dialog || !body || !title) return
+
+          const kind = trigger.dataset.kind
+          const src = trigger.dataset.src
+          const alt = trigger.dataset.alt
+          const caption = trigger.dataset.caption
+          const tracksRaw = trigger.dataset.tracks
+          if (!kind || !src) return
+
+          lastTrigger = trigger
+          title.textContent = caption ?? ''
+          clearBody()
+
+          if (kind === 'image') {
+            const img = document.createElement('img')
+            img.src = src
+            img.alt = alt ?? ''
+            img.className = 'h-auto w-full rounded-lg border border-white/10'
+            body.append(img)
+            openDialog()
+            return
+          }
+
+          if (kind === 'video') {
+            const video = document.createElement('video')
+            video.src = src
+            video.controls = true
+            video.playsInline = true
+            video.preload = 'metadata'
+            video.className = 'aspect-video h-auto w-full rounded-lg border border-white/10 bg-black/40'
+
+            const tracks = safeJsonParse(tracksRaw)
+            if (Array.isArray(tracks)) {
+              for (const t of tracks) {
+                if (!t?.src || !t?.srclang || !t?.label) continue
+                const track = document.createElement('track')
+                track.src = t.src
+                track.kind = 'captions'
+                track.srclang = t.srclang
+                track.label = t.label
+                if (t.default) track.default = true
+                video.append(track)
+              }
+            }
+
+            body.append(video)
+            openDialog()
+
+            video.play().catch(() => {
+              // ignore
+            })
+          }
+        }
+
+        scope.querySelectorAll('[data-media-preview-trigger]').forEach((el) => {
+          el.addEventListener('click', () => openMediaPreview(el))
+        })
+
+        dialog?.addEventListener('close', () => {
+          const playing = body?.querySelector('video')
+          try {
+            playing?.pause()
+          } catch {
+            // ignore
+          }
+          if (playing) {
+            playing.removeAttribute('src')
+            playing.load?.()
+          }
+
+          clearBody()
+
+          const t = lastTrigger
+          lastTrigger = null
+          if (t && typeof t.focus === 'function') t.focus()
+        })
+
+        dialog?.addEventListener('click', (e) => {
+          if (e.target === dialog) closeDialog()
+        })
+      </script>
+    </div>
+  )}
+</section>

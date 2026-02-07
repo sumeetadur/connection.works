@@ -1,13 +1,16 @@
 ---
 import { Image } from 'astro:assets'
 import ClientLogoLink from '@components/ClientLogoLink.astro'
-import CurrentYear from '@components/CurrentYear.astro'
 import BgImg from '@images/bg.png'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import { siteConfig } from '../siteConfig'
+import ProcessSteps from '../components/ProcessSteps.astro'
+import TestimonialGrid from '../components/TestimonialGrid.astro'
 
-const currentClientLogos = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/images/current-clients/*.png'
+const clientLogos = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/images/clients/*.png'
 )
-const currentClients = [
+const clients = [
   {
     id: 'rt',
     name: 'Remote Tech',
@@ -18,12 +21,6 @@ const currentClients = [
     name: 'Bathroom Design Shop',
     href: 'https://bathroomdesignshop.co.uk',
   },
-]
-
-const pastClientLogos = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/images/past-clients/*.png'
-)
-const pastClients = [
   {
     id: 'ontrack',
     name: 'OnTrack Retail',
@@ -47,90 +44,92 @@ const pastClients = [
 ]
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="Connection Works Web Development" />
-    <meta name="generator" content={Astro.generator} />
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-    <title>Connection Works</title>
-  </head>
-  <body>
-    <div class="relative h-full min-h-screen">
-      <div class="absolute inset-x-0 bottom-0 h-full bg-slate-800"></div>
-      <div
-        class="relative h-full min-h-screen pb-12 sm:pb-0 sm:overflow-hidden"
-      >
-        <div class="absolute inset-0">
-          <Image
-            class="h-full w-full object-cover object-top"
-            src={BgImg}
-            alt="Laptop on desk at night"
-          />
-        </div>
-        <div
-          class="relative flex h-full min-h-screen flex-col items-center justify-center"
-        >
-          <div class="space-y-6">
-            <div class="mx-auto rounded-lg max-w-max bg-black p-4 opacity-75">
-              <h1
-                class="text-center text-4xl font-semibold tracking-tight sm:text-5xl"
-              >
-                <span class="block text-white">Connection Works</span>
+<BaseLayout title="Home" description="Connection Works Web Development">
+  <div class="relative min-h-[calc(100vh-120px)]">
+    <div class="absolute inset-0">
+      <Image
+        class="h-full w-full object-cover object-top"
+        src={BgImg}
+        alt="Laptop on desk at night"
+      />
+      <div aria-hidden="true" class="absolute inset-0 bg-black/70"></div>
+    </div>
+
+    <div class="relative flex min-h-[calc(100vh-120px)] flex-col items-center justify-center px-4 py-10">
+      <div class="w-full max-w-4xl space-y-6">
+        <div class="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-black/70 px-6 py-10 sm:px-10 sm:py-12">
+          <div class="grid items-center gap-8 md:flex">
+            <div class="space-y-3 sm:space-y-4">
+              <!-- <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brown-300">Contract front-end engineering</p> -->
+              <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                Connection Works
               </h1>
-              <p
-                class="mx-auto mt-2 max-w-lg text-center text-xl text-brown-400 sm:mt-4 sm:max-w-3xl sm:text-2xl"
-              >
-                Web Development
+              <p class="text-xl text-brown-300 sm:text-2xl">{siteConfig.tagline}</p>
+              <p class="text-sm text-brown-300 !mt-1 sm:text-base">by {siteConfig.personName}</p>
+              <p class="max-w-2xl text-sm text-slate-200 sm:text-base">
+                Reliable front-end delivery: predictable state management, resilient UI patterns, and performant experiences.
               </p>
             </div>
-            <div class="mx-auto max-w-md bg-black rounded-lg p-4 opacity-75">
-              <p
-                class="text-center text-base font-semibold uppercase tracking-wider text-brown-400"
+
+            <div class="flex flex-initial shrink-0 flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-5 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+              <a
+                href="/portfolio"
+                class="w-full rounded-lg shrink-0 bg-white/10 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200 sm:w-auto"
               >
-                Currently working with
-              </p>
-              <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
-                {
-                  currentClients.map((client) => (
-                    <ClientLogoLink
-                      {...client}
-                      src={currentClientLogos[
-                        `/src/images/current-clients/${client.id}.png`
-                      ]()}
-                    />
-                  ))
-                }
-              </div>
-            </div>
-            <div class="mx-auto max-w-7xl bg-black rounded-lg p-4 opacity-75">
-              <p
-                class="text-center text-base font-semibold uppercase tracking-wider text-brown-400"
+                View portfolio
+              </a>
+              <a
+                href="/contact"
+                class="w-full rounded-lg bg-brown-900/40 px-5 py-3 text-center text-sm font-semibold text-brown-100 transition hover:bg-brown-900/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200 sm:w-auto"
               >
-                Previously worked with
-              </p>
-              <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
-                {
-                  pastClients.map((client) => (
-                    <ClientLogoLink
-                      {...client}
-                      src={pastClientLogos[
-                        `/src/images/past-clients/${client.id}.png`
-                      ]()}
-                    />
-                  ))
-                }
-              </div>
+                Contact
+              </a>
             </div>
           </div>
         </div>
-        <div
-          class="absolute right-0 bottom-0 bg-black p-1 text-xs text-white opacity-50"
-        >
-          &copy; <CurrentYear /> Connection Works Ltd. All Rights Reserved.
+
+        <div class="mx-auto max-w-4xl rounded-lg bg-black/70 p-5">
+          <h2 class="text-center text-base font-semibold uppercase tracking-wider text-brown-300">
+            What I do
+          </h2>
+          <div class="mt-5 grid gap-4 sm:grid-cols-3">
+            {siteConfig.primaryServices.map(
+              (s: (typeof siteConfig.primaryServices)[number]) => (
+              <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+                <h3 class="text-sm font-semibold text-white">{s.title}</h3>
+                <p class="mt-2 text-sm text-slate-200">{s.description}</p>
+              </div>
+              )
+            )}
+          </div>
+        </div>
+
+        <div class="mx-auto max-w-4xl rounded-lg bg-black/70 p-4">
+          <p class="text-center text-base font-semibold uppercase tracking-wider text-brown-300">
+            Worked With
+          </p>
+          <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+            {
+              clients.map((client) => (
+                <ClientLogoLink
+                  {...client}
+                  src={clientLogos[
+                    `/src/images/clients/${client.id}.png`
+                  ]()}
+                />
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="mx-auto w-full max-w-4xl rounded-lg bg-black/70 p-5">
+          <TestimonialGrid testimonials={siteConfig.testimonials} />
+        </div>
+
+        <div class="mx-auto w-full max-w-4xl rounded-lg bg-black/70 p-5">
+          <ProcessSteps steps={siteConfig.engagementProcess} />
         </div>
       </div>
     </div>
-  </body>
-</html>
+  </div>
+</BaseLayout>

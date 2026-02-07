@@ -1,0 +1,292 @@
+---
+const { codeAccess, projectSlug } = Astro.props as {
+  projectSlug: string
+  codeAccess?: {
+    expiresAt?: string
+    salt?: string
+    kdfIterations?: number
+    codeHash?: string
+    samples: Array<{
+      id: string
+      title: string
+      language: string
+      iv: string
+      ciphertext: string
+    }>
+  }
+}
+
+const hasSamples = (codeAccess?.samples?.length ?? 0) > 0
+---
+
+<section aria-label="Code samples" class="mt-10">
+  <div class="flex items-center justify-between gap-4">
+    <h2 class="text-base font-semibold text-white">Code samples</h2>
+  </div>
+
+  {!hasSamples ? (
+    <div class="mt-4 rounded-xl border border-white/10 bg-white/5 p-6 text-sm text-slate-300">
+      Code samples are available, but not published here.
+    </div>
+  ) : (
+    <div
+      class="mt-4 rounded-xl border border-white/10 bg-white/5 p-6"
+      data-code-access
+      data-project-slug={projectSlug}
+      data-salt={codeAccess?.salt}
+      data-kdf-iterations={(codeAccess?.kdfIterations ?? 210000).toString()}
+      data-code-hash={codeAccess?.codeHash}
+    >
+      <p class="text-sm text-slate-300">
+        If you’ve been given a temporary access link, open it to unlock NDA-safe code samples.
+      </p>
+
+      <div class="mt-4 hidden rounded-lg border border-emerald-500/20 bg-emerald-900/10 p-4" data-privilege-banner>
+        <div class="text-sm font-semibold text-emerald-100">
+          Privileged access granted
+        </div>
+        <div class="mt-1 text-sm text-emerald-100/90">
+          This session is authorised to view NDA-safe code samples.
+          <span class="whitespace-nowrap">Access expires <span class="font-semibold" data-privilege-expiry></span>.</span>
+        </div>
+      </div>
+
+      <div class="mt-4 hidden rounded-lg border border-amber-500/20 bg-amber-900/10 p-4" data-expired-banner>
+        <div class="text-sm font-semibold text-amber-100">
+          Access link expired
+        </div>
+        <div class="mt-1 text-sm text-amber-100/90">
+          This access link expired on <span class="font-semibold" data-expired-at></span>.
+          Please request a new link from the person who shared it with you.
+        </div>
+      </div>
+
+      <div class="mt-3 text-sm text-brown-100" role="status" aria-live="polite" data-code-access-status></div>
+
+      <div class="mt-6 hidden space-y-8" data-code-access-output>
+        {codeAccess?.samples.map((s) => (
+          <section aria-label={s.title} data-code-sample data-sample-id={s.id}>
+            <div class="flex items-center justify-between gap-4">
+              <h3 class="text-sm font-semibold text-white">{s.title}</h3>
+              <button
+                type="button"
+                class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                data-copy-button
+              >
+                Copy
+              </button>
+            </div>
+
+            <div
+              class="mt-3 overflow-x-auto rounded-lg border border-white/10 bg-black/40 p-4 text-sm"
+              data-code-container
+              data-language={s.language}
+              data-iv={s.iv}
+              data-ciphertext={s.ciphertext}
+            ></div>
+          </section>
+        ))}
+      </div>
+
+      <script type="module">
+        const root = document.querySelector('[data-code-access]')
+        if (!root) throw new Error('Code access root not found')
+
+        const statusEl = root.querySelector('[data-code-access-status]')
+        const output = root.querySelector('[data-code-access-output]')
+        const banner = root.querySelector('[data-privilege-banner]')
+        const bannerExpiry = root.querySelector('[data-privilege-expiry]')
+        const expiredBanner = root.querySelector('[data-expired-banner]')
+        const expiredAt = root.querySelector('[data-expired-at]')
+
+        const encoder = new TextEncoder()
+        const decoder = new TextDecoder()
+
+        function setStatus(message) {
+          if (statusEl) statusEl.textContent = message
+        }
+
+        function base64UrlToBytes(str) {
+          const normalized = str.replace(/-/g, '+').replace(/_/g, '/')
+          const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4)
+          const binary = atob(padded)
+          const bytes = new Uint8Array(binary.length)
+          for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i)
+          return bytes
+        }
+
+        function formatExpiry(iso) {
+          const ms = Date.parse(iso)
+          if (Number.isNaN(ms)) return iso
+          return new Intl.DateTimeFormat(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }).format(new Date(ms))
+        }
+
+        async function deriveKey(secret, saltBytes, iterations) {
+          const keyMaterial = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(secret),
+            { name: 'PBKDF2' },
+            false,
+            ['deriveKey']
+          )
+          return crypto.subtle.deriveKey(
+            {
+              name: 'PBKDF2',
+              salt: saltBytes,
+              iterations,
+              hash: 'SHA-256',
+            },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['decrypt']
+          )
+        }
+
+        async function decryptToString({ key, ivBytes, ciphertextBytes, sampleId }) {
+          try {
+            const decrypted = await crypto.subtle.decrypt(
+              { name: 'AES-GCM', iv: ivBytes },
+              key,
+              ciphertextBytes
+            )
+            return decoder.decode(decrypted)
+          } catch (err) {
+            console.error(`Decryption failed for sample ${sampleId}:`, err)
+            throw new Error(`Decryption failed for ${sampleId}`)
+          }
+        }
+
+        async function unlockWithToken(token) {
+          const projectSlug = root.dataset.projectSlug
+          if (!projectSlug) throw new Error('Missing project context')
+
+          const res = await fetch('/api/code-access/exchange', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, projectSlug }),
+          })
+
+          const data = await res.json().catch(() => ({}))
+          if (!res.ok) {
+            if (res.status === 403 && data?.expiredAt) {
+              if (expiredBanner && expiredAt) {
+                expiredAt.textContent = formatExpiry(data.expiredAt)
+                expiredBanner.classList.remove('hidden')
+              }
+              setStatus('')
+              return
+            }
+            throw new Error(typeof data?.error === 'string' ? data.error : 'Unlock failed')
+          }
+
+          const expiresAt = typeof data?.expiresAt === 'string' ? data.expiresAt : ''
+          const secret = typeof data?.secret === 'string' ? data.secret : ''
+          const allowedSampleIds = Array.isArray(data?.allowedSampleIds)
+            ? data.allowedSampleIds.map((x) => String(x))
+            : []
+
+          if (!expiresAt || !secret) throw new Error('Unlock failed')
+
+          const salt = root.dataset.salt
+          if (!salt) throw new Error('Missing salt')
+
+          const iterationsRaw = root.dataset.kdfIterations
+          const iterations = Number(iterationsRaw)
+          if (!Number.isFinite(iterations) || iterations <= 0) {
+            throw new Error('Invalid key derivation parameters')
+          }
+
+          const key = await deriveKey(`${salt}:${secret}`, base64UrlToBytes(salt), iterations)
+
+          const containers = root.querySelectorAll('[data-code-container]')
+          console.log(`Found ${containers.length} code containers`)
+          console.log(`Allowed sample IDs:`, allowedSampleIds)
+          
+          let decryptedCount = 0
+          for (const container of containers) {
+            const section = container.closest('[data-code-sample]')
+            const sampleId = section?.getAttribute('data-sample-id')
+            console.log(`Processing sample: ${sampleId}`)
+            
+            if (sampleId && allowedSampleIds.length > 0 && !allowedSampleIds.includes(sampleId)) {
+              console.log(`Sample ${sampleId} not in allowed list, removing`)
+              section?.remove()
+              continue
+            }
+
+            const iv = container.dataset.iv
+            const ciphertext = container.dataset.ciphertext
+            if (!iv || !ciphertext) {
+              console.log(`Sample ${sampleId} missing iv or ciphertext`)
+              continue
+            }
+
+            try {
+              const html = await decryptToString({
+                key,
+                ivBytes: base64UrlToBytes(iv),
+                ciphertextBytes: base64UrlToBytes(ciphertext),
+                sampleId,
+              })
+              container.innerHTML = html
+              decryptedCount++
+              console.log(`Successfully decrypted ${sampleId}`)
+            } catch (err) {
+              console.error(`Failed to decrypt ${sampleId}:`, err)
+              container.innerHTML = `<p class="text-red-400">Failed to decrypt ${sampleId}</p>`
+            }
+          }
+          console.log(`Decrypted ${decryptedCount} samples`)
+
+          output?.classList.remove('hidden')
+          setStatus('Unlocked')
+
+          if (banner && bannerExpiry) {
+            bannerExpiry.textContent = formatExpiry(expiresAt)
+            banner.classList.remove('hidden')
+          }
+
+          const copyButtons = root.querySelectorAll('[data-copy-button]')
+          for (const btn of copyButtons) {
+            btn.addEventListener('click', async () => {
+              const section = btn.closest('[data-code-sample]')
+              const pre = section?.querySelector('pre')
+              const text = pre?.innerText
+              if (!text) return
+              try {
+                await navigator.clipboard.writeText(text)
+                setStatus('Copied to clipboard')
+              } catch {
+                setStatus('Copy failed')
+              }
+            })
+          }
+        }
+
+        async function maybeUnlockFromQueryString() {
+          const params = new URLSearchParams(window.location.search)
+          const token = params.get('token')
+          if (!token) {
+            setStatus('Access link required')
+            return
+          }
+          try {
+            setStatus('Unlocking…')
+            await unlockWithToken(token)
+          } catch (err) {
+            setStatus(err instanceof Error ? err.message : 'Unlock failed')
+          }
+        }
+
+        maybeUnlockFromQueryString()
+      </script>
+    </div>
+  )}
+</section>

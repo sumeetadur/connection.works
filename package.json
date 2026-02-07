@@ -7,18 +7,28 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate:code-access": "node scripts/generate-code-access.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
+    "@astrojs/node": "^9.4.4",
+    "@astrojs/react": "^4.3.1",
     "@astrojs/tailwind": "^6.0.2",
     "astro": "^5.16.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
+    "@types/node": "^22.13.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@tailwindcss/typography": "^0.5.16",
     "prettier": "^3.2.5",
     "prettier-plugin-astro": "^0.13.0",
+    "shiki": "^3.21.0",
     "sharp": "^0.33.2"
   },
   "engines": {

@@ -1,0 +1,753 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+export const prerender = false
+---
+
+<BaseLayout title="Admin — Tokens" description="Manage code access tokens">
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <div class="max-w-3xl">
+      <h1 class="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+        Token management
+      </h1>
+      <p class="mt-3 text-lg text-slate-300">
+        Create, edit, revoke, and delete time-limited access links for NDA-safe code samples.
+      </p>
+
+      <div class="mt-8 rounded-xl border border-white/10 bg-white/5 p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 class="text-base font-semibold text-white">Tokens</h2>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="rounded-md bg-brown-900/40 px-4 py-2 text-sm font-semibold text-brown-100 transition hover:bg-brown-900/60"
+              data-open-create
+            >
+              New token
+            </button>
+            <button
+              type="button"
+              class="rounded-md bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/15"
+              data-logout
+            >
+              Log out
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="text-slate-300">
+              <tr>
+                <th class="py-2 pr-4 font-semibold">Label</th>
+                <th class="py-2 pr-4 font-semibold">Projects</th>
+                <th class="py-2 pr-4 font-semibold">Uses</th>
+                <th class="py-2 pr-4 font-semibold">Expiry</th>
+                <th class="py-2 pr-4 font-semibold">Last used</th>
+                <th class="py-2 pr-4 font-semibold">Status</th>
+                <th class="py-2 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-200" data-token-table-body>
+              <tr>
+                <td class="py-3 pr-4" colspan="7">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <dialog
+        class="w-[min(100vw-2rem,48rem)] rounded-xl border border-white/10 bg-slate-950 p-0 text-slate-100 backdrop:bg-black/70"
+        aria-label="Create token"
+        data-create-dialog
+      >
+        <div class="border-b border-white/10 px-6 py-4">
+          <h2 class="text-base font-semibold text-white">Create token</h2>
+        </div>
+        <form class="px-6 py-5" data-create-form>
+          <div class="grid gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-white" for="label">
+                Label
+              </label>
+              <input
+                id="label"
+                name="label"
+                type="text"
+                class="mt-2 w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-white" for="expiresAt">
+                Expires at
+              </label>
+              <input
+                id="expiresAt"
+                name="expiresAt"
+                type="datetime-local"
+                required
+                class="mt-2 w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
+              />
+              <p class="mt-2 text-xs text-slate-300">
+                Times are saved in your local timezone.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between gap-4">
+                <label class="block text-sm font-semibold text-white">
+                  Project scopes
+                </label>
+                <button
+                  type="button"
+                  class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15"
+                  data-add-scope
+                >
+                  Add project
+                </button>
+              </div>
+              <div class="mt-3 grid gap-4" data-scope-list></div>
+            </div>
+          </div>
+
+          <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="text-sm text-brown-100" role="status" aria-live="polite" data-create-status></div>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                class="rounded-md bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
+                data-close-create
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="rounded-md bg-brown-900/40 px-4 py-2 text-sm font-semibold text-brown-100 transition hover:bg-brown-900/60"
+              >
+                Create
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-5 hidden rounded-lg border border-white/10 bg-black/40 p-4 text-sm" data-create-result>
+            <div class="font-semibold text-white">Access link</div>
+            <div class="mt-2 space-y-2" data-create-links></div>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog
+        class="w-[min(100vw-2rem,40rem)] rounded-xl border border-white/10 bg-slate-950 p-0 text-slate-100 backdrop:bg-black/70"
+        aria-label="Confirm deletion"
+        data-delete-dialog
+      >
+        <div class="border-b border-white/10 px-6 py-4">
+          <h2 class="text-base font-semibold text-white">Delete token</h2>
+        </div>
+        <div class="px-6 py-5">
+          <p class="text-sm text-slate-300">
+            This will permanently delete the token. Any previously shared links will stop working.
+          </p>
+          <div class="mt-4 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              class="rounded-md bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
+              data-delete-cancel
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="rounded-md bg-red-900/50 px-4 py-2 text-sm font-semibold text-red-100 hover:bg-red-900/70"
+              data-delete-confirm
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog
+        class="w-[min(100vw-2rem,40rem)] rounded-xl border border-white/10 bg-slate-950 p-0 text-slate-100 backdrop:bg-black/70"
+        aria-label="Copy access link"
+        data-copy-dialog
+      >
+        <div class="border-b border-white/10 px-6 py-4">
+          <h2 class="text-base font-semibold text-white">Copy access link</h2>
+        </div>
+        <div class="px-6 py-5">
+          <div class="text-sm text-slate-300">Choose which project page to link to</div>
+          <div class="mt-4 grid gap-2" data-copy-links></div>
+          <div class="mt-5 flex items-center justify-end">
+            <button
+              type="button"
+              class="rounded-md bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
+              data-copy-close
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </dialog>
+
+      <script type="module">
+        const tokenBody = document.querySelector('[data-token-table-body]')
+        const createDialog = document.querySelector('[data-create-dialog]')
+        const deleteDialog = document.querySelector('[data-delete-dialog]')
+        const copyDialog = document.querySelector('[data-copy-dialog]')
+
+        const createForm = document.querySelector('[data-create-form]')
+        const createStatus = document.querySelector('[data-create-status]')
+        const createResult = document.querySelector('[data-create-result]')
+        const createLinks = document.querySelector('[data-create-links]')
+
+        const scopeList = document.querySelector('[data-scope-list]')
+        const addScopeBtn = document.querySelector('[data-add-scope]')
+
+        let projects = []
+        let deletingId = null
+        let createScopes = []
+
+        function setCreateStatus(msg) {
+          if (createStatus) createStatus.textContent = msg
+        }
+
+        function toIsoFromLocalDatetime(local) {
+          const d = new Date(local)
+          return d.toISOString()
+        }
+
+        function formatDate(iso) {
+          const ms = Date.parse(iso)
+          if (Number.isNaN(ms)) return iso
+          return new Intl.DateTimeFormat(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          }).format(new Date(ms))
+        }
+
+        function computeStatus(t) {
+          if (t.revokedAt) return 'Revoked'
+          const ms = Date.parse(t.expiresAt)
+          if (!Number.isNaN(ms) && Date.now() > ms) return 'Expired'
+          return 'Active'
+        }
+
+        function statusClass(label) {
+          if (label === 'Active') return 'bg-emerald-900/30 text-emerald-100'
+          if (label === 'Expired') return 'bg-slate-800/40 text-slate-200'
+          return 'bg-red-900/30 text-red-100'
+        }
+
+        function escapeHtml(str) {
+          return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+        }
+
+        function escapeRegex(str) {
+          return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        }
+
+        function highlightMatch(text, terms) {
+          if (!terms.length) return escapeHtml(text)
+          let result = escapeHtml(text)
+          for (const term of terms) {
+            const re = new RegExp(`(${escapeRegex(term)})`, 'gi')
+            result = result.replace(re, '<strong class="text-brown-100">$1</strong>')
+          }
+          return result
+        }
+
+        function fuzzyMatch(text, terms) {
+          const lower = text.toLowerCase()
+          return terms.every((t) => lower.includes(t.toLowerCase()))
+        }
+
+        function renderTokens(tokens) {
+          if (!tokenBody) return
+          if (!tokens.length) {
+            tokenBody.innerHTML = `<tr><td class="py-3 pr-4" colspan="7">No tokens yet</td></tr>`
+            return
+          }
+
+          tokenBody.innerHTML = tokens
+            .map((t) => {
+              const status = computeStatus(t)
+              const projectCount = Array.isArray(t.scopes) ? t.scopes.length : 0
+              const label = t.label || '—'
+              const expiry = formatDate(t.expiresAt)
+              const lastUsed = t.lastUsedAt ? formatDate(t.lastUsedAt) : '—'
+              return `
+                <tr class="border-t border-white/10">
+                  <td class="py-3 pr-4">${escapeHtml(label)}</td>
+                  <td class="py-3 pr-4">${projectCount}</td>
+                  <td class="py-3 pr-4">${t.uses ?? 0}</td>
+                  <td class="py-3 pr-4">${expiry}</td>
+                  <td class="py-3 pr-4">${lastUsed}</td>
+                  <td class="py-3 pr-4">
+                    <span class="rounded-full px-3 py-1 text-xs font-semibold ${statusClass(status)}">${status}</span>
+                  </td>
+                  <td class="py-3">
+                    <div class="flex flex-wrap gap-2">
+                      <button type="button" class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15" data-copy-token data-id="${t.id}">
+                        Copy link
+                      </button>
+                      <a href="/admin/tokens/${t.id}" class="rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15">
+                        Edit
+                      </a>
+                      <button type="button" class="rounded-md bg-red-900/50 px-3 py-2 text-xs font-semibold text-red-100 hover:bg-red-900/70" data-delete-token data-id="${t.id}">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `
+            })
+            .join('')
+        }
+
+        async function fetchTokens() {
+          const res = await fetch('/api/admin/tokens', { headers: { 'Accept': 'application/json' } })
+          if (!res.ok) throw new Error('Failed to load tokens')
+          const data = await res.json()
+          return data.tokens ?? []
+        }
+
+        async function fetchProjects() {
+          const res = await fetch('/api/admin/projects', { headers: { 'Accept': 'application/json' } })
+          if (!res.ok) throw new Error('Failed to load projects')
+          const data = await res.json()
+          return data.projects ?? []
+        }
+
+        async function getSignedToken(id) {
+          const res = await fetch(`/api/admin/tokens/${id}`, { headers: { 'Accept': 'application/json' } })
+          if (!res.ok) throw new Error('Failed to load token')
+          return res.json()
+        }
+
+        function projectOptionMarkup(selectedSlug) {
+          return projects
+            .map((p) => {
+              const selected = p.slug === selectedSlug ? 'selected' : ''
+              return `<option value="${p.slug}" ${selected}>${escapeHtml(p.title)} (${escapeHtml(p.slug)})</option>`
+            })
+            .join('')
+        }
+
+        function selectedSamplesMarkup(projectSlug, selectedIds) {
+          if (!selectedIds.length) return ''
+          const p = projects.find((x) => x.slug === projectSlug)
+          const samples = p?.samples ?? []
+          return `
+            <div class="mb-2">
+              <div class="text-xs font-semibold text-slate-300 mb-1">Selected (${selectedIds.length})</div>
+              <div class="grid gap-1">
+                ${selectedIds
+                  .map((id) => {
+                    const s = samples.find((x) => x.id === id)
+                    if (!s) return ''
+                    return `
+                      <label class="flex items-start gap-3 rounded-lg border border-emerald-500/20 bg-emerald-900/10 px-3 py-2">
+                        <input type="checkbox" value="${escapeHtml(s.id)}" class="mt-1" checked data-sample-checkbox />
+                        <span class="min-w-0">
+                          <span class="block text-sm font-semibold text-white">${escapeHtml(s.title)}</span>
+                          <span class="block text-xs text-slate-300">${escapeHtml(s.id)} &bull; ${escapeHtml(s.language)}</span>
+                        </span>
+                      </label>
+                    `
+                  })
+                  .filter(Boolean)
+                  .join('')}
+              </div>
+            </div>
+          `
+        }
+
+        function sampleCheckboxMarkup(projectSlug, selectedIds, searchQuery) {
+          const p = projects.find((x) => x.slug === projectSlug)
+          const samples = p?.samples ?? []
+          if (!samples.length) {
+            return `<div class="text-sm text-slate-300">No code samples configured for this project</div>`
+          }
+          const set = new Set(selectedIds)
+          const terms = (searchQuery || '').trim().split(/\s+/).filter(Boolean)
+          const filtered = samples.filter((s) => {
+            if (set.has(s.id)) return false
+            if (terms.length) return fuzzyMatch(`${s.title} ${s.id} ${s.language}`, terms)
+            return true
+          })
+          if (!filtered.length) {
+            return terms.length
+              ? `<div class="text-sm text-slate-300">No samples match your search</div>`
+              : ''
+          }
+          return filtered
+            .map((s) => {
+              return `
+                <label class="flex items-start gap-3 rounded-lg border border-white/10 bg-black/30 px-3 py-2">
+                  <input type="checkbox" value="${escapeHtml(s.id)}" class="mt-1" data-sample-checkbox />
+                  <span class="min-w-0">
+                    <span class="block text-sm font-semibold text-white">${highlightMatch(s.title, terms)}</span>
+                    <span class="block text-xs text-slate-300">${highlightMatch(s.id, terms)} &bull; ${highlightMatch(s.language, terms)}</span>
+                  </span>
+                </label>
+              `
+            })
+            .join('')
+        }
+
+        function renderScopeSamples(row) {
+          const idx = Number(row.getAttribute('data-index'))
+          if (!Number.isFinite(idx)) return
+          const scope = createScopes[idx]
+          if (!scope) return
+          const searchInput = row.querySelector('[data-sample-search]')
+          const query = searchInput?.value || ''
+          const wrap = row.querySelector('[data-scope-samples]')
+          if (!wrap) return
+          wrap.innerHTML = `
+            ${selectedSamplesMarkup(scope.projectSlug, scope.sampleIds)}
+            <div class="max-h-60 overflow-y-auto grid gap-2" data-scope-samples-list>
+              ${sampleCheckboxMarkup(scope.projectSlug, scope.sampleIds, query)}
+            </div>
+          `
+        }
+
+        function renderScopeList() {
+          if (!scopeList) return
+          if (!projects.length) {
+            scopeList.innerHTML = `<div class="text-sm text-slate-300">Loading projects…</div>`
+            return
+          }
+
+          if (createScopes.length === 0) {
+            createScopes = [{ projectSlug: projects[0].slug, sampleIds: [] }]
+          }
+
+          scopeList.innerHTML = createScopes
+            .map((s, idx) => {
+              return `
+                <div class="rounded-xl border border-white/10 bg-black/20 p-4" data-scope-row data-index="${idx}">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="w-full">
+                      <label class="block text-sm font-semibold text-white">Project</label>
+                      <select class="mt-2 w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm text-white" data-scope-project>
+                        ${projectOptionMarkup(s.projectSlug)}
+                      </select>
+                    </div>
+                    <button type="button" class="mt-1 rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15" data-remove-scope>
+                      Remove
+                    </button>
+                  </div>
+
+                  <div class="mt-4">
+                    <div class="text-sm font-semibold text-white">Allowed samples</div>
+                    <input
+                      type="text"
+                      placeholder="Search samples…"
+                      class="mt-2 w-full rounded-md border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-slate-500"
+                      data-sample-search
+                    />
+                    <div class="mt-2" data-scope-samples>
+                      ${selectedSamplesMarkup(s.projectSlug, s.sampleIds)}
+                      <div class="max-h-60 overflow-y-auto grid gap-2" data-scope-samples-list>
+                        ${sampleCheckboxMarkup(s.projectSlug, s.sampleIds, '')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `
+            })
+            .join('')
+        }
+
+        function readScopeSamples(row) {
+          const idx = Number(row.getAttribute('data-index'))
+          if (!Number.isFinite(idx)) return
+          const projectSlug = row.querySelector('[data-scope-project]')?.value
+          const sampleIds = Array.from(row.querySelectorAll('input[data-sample-checkbox]'))
+            .filter((el) => el instanceof HTMLInputElement && el.checked)
+            .map((el) => el.value)
+          if (!projectSlug) return
+          createScopes[idx] = { projectSlug, sampleIds }
+        }
+
+        addScopeBtn?.addEventListener('click', () => {
+          if (!projects.length) return
+          createScopes.push({ projectSlug: projects[0].slug, sampleIds: [] })
+          renderScopeList()
+        })
+
+        scopeList?.addEventListener('change', (e) => {
+          const target = e.target
+          if (!(target instanceof HTMLElement)) return
+          const row = target.closest('[data-scope-row]')
+          if (!row) return
+
+          if (target.matches('[data-scope-project]')) {
+            const idx = Number(row.getAttribute('data-index'))
+            if (Number.isFinite(idx)) {
+              createScopes[idx] = { projectSlug: target.value, sampleIds: [] }
+              const searchInput = row.querySelector('[data-sample-search]')
+              if (searchInput) searchInput.value = ''
+            }
+            renderScopeSamples(row)
+            return
+          }
+
+          if (target.matches('[data-sample-checkbox]')) {
+            readScopeSamples(row)
+            renderScopeSamples(row)
+          }
+        })
+
+        scopeList?.addEventListener('input', (e) => {
+          const target = e.target
+          if (!(target instanceof HTMLElement)) return
+          if (!target.matches('[data-sample-search]')) return
+          const row = target.closest('[data-scope-row]')
+          if (!row) return
+          renderScopeSamples(row)
+        })
+
+        scopeList?.addEventListener('click', (e) => {
+          const target = e.target
+          if (!(target instanceof HTMLElement)) return
+          const btn = target.closest('[data-remove-scope]')
+          if (!btn) return
+          const row = btn.closest('[data-scope-row]')
+          if (!row) return
+          const idx = Number(row.getAttribute('data-index'))
+          if (!Number.isFinite(idx)) return
+          createScopes.splice(idx, 1)
+          renderScopeList()
+        })
+
+        document.querySelector('[data-open-create]')?.addEventListener('click', async () => {
+          createForm?.reset()
+          createResult?.classList.add('hidden')
+          setCreateStatus('')
+          createScopes = []
+          renderScopeList()
+          createDialog?.showModal()
+        })
+
+        document.querySelector('[data-close-create]')?.addEventListener('click', () => {
+          createDialog?.close()
+        })
+
+        document.querySelector('[data-delete-cancel]')?.addEventListener('click', () => {
+          deletingId = null
+          deleteDialog?.close()
+        })
+
+        document.querySelector('[data-delete-confirm]')?.addEventListener('click', async () => {
+          if (!deletingId) return
+          try {
+            const res = await fetch(`/api/admin/tokens/${deletingId}`, { method: 'DELETE' })
+            if (!res.ok) throw new Error('Delete failed')
+            deletingId = null
+            deleteDialog?.close()
+            renderTokens(await fetchTokens())
+          } catch {
+            deletingId = null
+            deleteDialog?.close()
+          }
+        })
+
+        tokenBody?.addEventListener('click', async (e) => {
+          const el = e.target
+          if (!(el instanceof HTMLElement)) return
+
+          const copy = el.closest('[data-copy-token]')
+          const del = el.closest('[data-delete-token]')
+
+          if (copy) {
+            const id = copy.getAttribute('data-id')
+            if (!id) return
+            try {
+              const data = await getSignedToken(id)
+              const token = data.signedToken
+              const scopes = data.token?.scopes ?? []
+              const scopeProjects = scopes
+                .map((s) => String(s.projectSlug || ''))
+                .filter((s) => s)
+
+              if (scopeProjects.length <= 1) {
+                const firstScopeProject = scopeProjects[0]
+                const url = firstScopeProject
+                  ? `${location.origin}/portfolio/${firstScopeProject}?token=${token}`
+                  : token
+                try {
+                  await navigator.clipboard.writeText(url)
+                } catch {
+                  // ignore
+                }
+                return
+              }
+
+              const wrap = copyDialog?.querySelector('[data-copy-links]')
+              if (wrap) {
+                wrap.innerHTML = scopeProjects
+                  .map((slug) => {
+                    return `
+                      <button type="button" class="rounded-md bg-white/10 px-4 py-2 text-left text-sm font-semibold text-white hover:bg-white/15" data-copy-project="${slug}">
+                        /portfolio/${slug}?token=…
+                      </button>
+                    `
+                  })
+                  .join('')
+
+                wrap.querySelectorAll('[data-copy-project]').forEach((btn) => {
+                  btn.addEventListener('click', async () => {
+                    const slug = btn.getAttribute('data-copy-project')
+                    if (!slug) return
+                    const url = `${location.origin}/portfolio/${slug}?token=${token}`
+                    try {
+                      await navigator.clipboard.writeText(url)
+                    } catch {
+                      // ignore
+                    }
+                    copyDialog?.close()
+                  })
+                })
+              }
+
+              copyDialog?.showModal()
+            } catch (err) {
+              console.error('Copy link failed:', err)
+            }
+            return
+          }
+
+          if (del) {
+            const id = del.getAttribute('data-id')
+            if (!id) return
+            deletingId = id
+            deleteDialog?.showModal()
+          }
+        })
+
+        createForm?.addEventListener('submit', async (e) => {
+          e.preventDefault()
+          setCreateStatus('Creating…')
+
+          const fd = new FormData(createForm)
+          const label = String(fd.get('label') ?? '').trim()
+          const expiresAtLocal = String(fd.get('expiresAt') ?? '')
+
+          createScopes = Array.from(scopeList?.querySelectorAll('[data-scope-row]') ?? []).map((row) => {
+            const projectSlug = row.querySelector('[data-scope-project]')?.value
+            const sampleIds = Array.from(row.querySelectorAll('input[data-sample-checkbox]'))
+              .filter((el) => el instanceof HTMLInputElement && el.checked)
+              .map((el) => el.value)
+            return { projectSlug, sampleIds }
+          })
+
+          const scopes = createScopes
+            .map((s) => ({
+              projectSlug: String(s.projectSlug || ''),
+              sampleIds: Array.isArray(s.sampleIds) ? s.sampleIds : [],
+            }))
+            .filter((s) => s.projectSlug && s.sampleIds.length > 0)
+
+          if (!expiresAtLocal) {
+            setCreateStatus('Select an expiry')
+            return
+          }
+
+          if (scopes.length === 0) {
+            setCreateStatus('Add at least one project scope with a sample selection')
+            return
+          }
+
+          try {
+            const res = await fetch('/api/admin/tokens', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                label,
+                expiresAt: toIsoFromLocalDatetime(expiresAtLocal),
+                scopes,
+              }),
+            })
+
+            const data = await res.json()
+            if (!res.ok) throw new Error(data?.error || 'Create failed')
+
+            const signedToken = data.signedToken
+
+            if (createLinks) {
+              createLinks.innerHTML = scopes
+                .map((s) => {
+                  const url = `${location.origin}/portfolio/${s.projectSlug}?token=${signedToken}`
+                  return `
+                    <div class="rounded-lg border border-white/10 bg-black/30 p-3">
+                      <div class="text-xs font-semibold text-slate-300">${escapeHtml(s.projectSlug)}</div>
+                      <div class="mt-1 break-all text-slate-200" data-created-url>${escapeHtml(url)}</div>
+                      <button type="button" class="mt-2 rounded-md bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/15" data-copy-created>
+                        Copy link
+                      </button>
+                    </div>
+                  `
+                })
+                .join('')
+
+              createLinks.querySelectorAll('[data-copy-created]').forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                  const url = btn.parentElement?.querySelector('[data-created-url]')?.textContent
+                  if (!url) return
+                  try {
+                    await navigator.clipboard.writeText(url)
+                    setCreateStatus('Copied')
+                  } catch {
+                    setCreateStatus('Copy failed')
+                  }
+                })
+              })
+            }
+
+            createResult?.classList.remove('hidden')
+            setCreateStatus('Created')
+
+            try {
+              renderTokens(await fetchTokens())
+            } catch {
+              // table refresh failed but token was created
+            }
+          } catch (err) {
+            setCreateStatus(err instanceof Error ? err.message : 'Create failed')
+          }
+        })
+
+        document.querySelector('[data-copy-close]')?.addEventListener('click', () => {
+          copyDialog?.close()
+        })
+
+        document.querySelector('[data-logout]')?.addEventListener('click', async () => {
+          try {
+            await fetch('/api/admin/logout', { method: 'POST' })
+            window.location.href = '/admin/login'
+          } catch {
+            window.location.href = '/admin/login'
+          }
+        })
+
+        async function init() {
+          projects = await fetchProjects()
+          renderScopeList()
+          renderTokens(await fetchTokens())
+        }
+
+        init().catch(() => {
+          renderTokens([])
+        })
+      </script>
+    </div>
+  </section>
+</BaseLayout>

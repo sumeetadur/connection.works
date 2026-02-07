@@ -1,0 +1,90 @@
+---
+import SiteFooter from '../components/SiteFooter.astro'
+import SiteNav from '../components/SiteNav.astro'
+import '../styles/global.css'
+import { siteConfig } from '../siteConfig'
+
+const { title, description } = Astro.props as {
+  title: string
+  description?: string
+}
+
+const fullTitle = title ? `${title} | Connection Works` : 'Connection Works'
+
+const resolvedDescription = description ?? siteConfig.tagline
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin)
+
+const ogImageUrl = new URL('/og.svg', Astro.site ?? Astro.url.origin)
+
+const sameAs = [siteConfig.linkedInUrl, siteConfig.githubUrl].filter(
+  (u) => !['https://www.linkedin.com/', 'https://github.com/'].includes(u)
+)
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: siteConfig.personName,
+  url: canonicalUrl.origin,
+  email: siteConfig.email,
+  worksFor: {
+    '@type': 'Organization',
+    name: siteConfig.companyName,
+    url: canonicalUrl.origin,
+  },
+  sameAs,
+}
+---
+
+<!doctype html>
+<html lang="en-GB" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={resolvedDescription} />
+    <meta name="theme-color" content="#0b1220" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="application-name" content={siteConfig.siteName} />
+    <meta name="apple-mobile-web-app-title" content={siteConfig.siteName} />
+    <link rel="canonical" href={canonicalUrl.href} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={resolvedDescription} />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteConfig.siteName} />
+    <meta property="og:image" content={ogImageUrl.href} />
+    <meta property="og:image:alt" content={`${siteConfig.siteName} — ${siteConfig.tagline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageUrl.href} />
+    <meta name="twitter:image:alt" content={`${siteConfig.siteName} — ${siteConfig.tagline}`} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={resolvedDescription} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-black focus:px-4 focus:py-2 focus:text-white"
+    >
+      Skip to content
+    </a>
+
+    <div class="relative">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-950 to-slate-950"></div>
+      </div>
+
+      <header class="relative">
+        <SiteNav />
+      </header>
+
+      <main id="main" class="relative">
+        <slot />
+      </main>
+
+      <SiteFooter />
+    </div>
+  </body>
+</html>

@@ -5,18 +5,19 @@ const { href, name, src } = Astro.props
 ---
 
 <a
-  class="group relative col-span-1 flex cursor-pointer justify-center bg-gray-900 p-4"
+  class="group relative col-span-1 flex cursor-pointer justify-center bg-gray-900 p-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200"
   target="_blank"
-  rel="noreferrer"
+  rel="noopener noreferrer"
+  aria-label={`${name} (opens in a new tab)`}
   {href}
 >
   <Image class="max-h-7 max-w-xs object-contain" {src} alt={name} />
   <div
-    class="absolute inset-0 hidden bg-slate-500 group-hover:block group-hover:bg-opacity-20"
+    class="absolute inset-0 hidden bg-slate-500 group-hover:block group-hover:bg-opacity-20 group-focus-visible:block group-focus-visible:bg-opacity-20"
   >
   </div>
   <svg
-    class="absolute top-1 right-1 hidden h-5 w-5 text-white group-hover:block"
+    class="absolute top-1 right-1 hidden h-5 w-5 text-white group-hover:block group-focus-visible:block"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"

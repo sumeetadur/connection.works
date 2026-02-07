@@ -1,0 +1,22 @@
+---
+const { steps } = Astro.props as {
+  steps: Array<{ title: string; description: string }>
+}
+---
+
+<section aria-label="Engagement process">
+  <h2 class="text-base font-semibold text-white">How we'll work together</h2>
+  <ol class="mt-4 grid gap-4 sm:grid-cols-3">
+    {steps.map((s, idx) => (
+      <li class="rounded-xl border border-white/10 bg-white/5 p-5">
+        <div class="flex items-center gap-3">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brown-900/40 text-sm font-semibold text-brown-100">
+            {idx + 1}
+          </span>
+          <h3 class="text-sm font-semibold text-white">{s.title}</h3>
+        </div>
+        <p class="mt-3 text-sm text-slate-300">{s.description}</p>
+      </li>
+    ))}
+  </ol>
+</section>

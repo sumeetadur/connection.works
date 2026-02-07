@@ -1,5 +1,74 @@
 # Astro Starter Kit: Minimal
 
+## Connection Works portfolio
+
+This repo contains the Connection Works marketing + portfolio site built with Astro + Tailwind.
+
+### Key routes
+
+- **Home**: `/`
+- **Portfolio index**: `/portfolio`
+- **Project detail**: `/portfolio/[slug]`
+- **Media guidelines**: `/portfolio/media-guidelines`
+
+### Edit site-wide copy
+
+Update:
+
+- `src/siteConfig.ts`
+
+This is where you control:
+
+- Name, tagline, location, availability line
+- Email + social links
+- Services, testimonials, engagement process
+
+### Add a new project
+
+1. Create a new file:
+
+- `src/content/projects/<your-slug>.md`
+
+2. Add frontmatter matching the schema in:
+
+- `src/content/config.ts`
+
+3. The project will automatically appear on:
+
+- `/portfolio`
+
+### Add NDA-safe screenshots / video
+
+1. Put files under `public/` (so URLs are stable):
+
+- `public/portfolio/<project-slug>/<asset>`
+
+2. Reference them in the project frontmatter:
+
+```yaml
+media:
+  - kind: image
+    src: /portfolio/<project-slug>/example.png
+    alt: Short description of what’s shown (redacted)
+    caption: Optional caption
+  - kind: video
+    src: /portfolio/<project-slug>/demo.mp4
+    alt: What the clip demonstrates
+    caption: Optional caption
+```
+
+If you’re capturing real client work, use:
+
+- `/portfolio/media-guidelines`
+
+### Static hosting notes (404s and deep links)
+
+If you deploy to a static host that supports Netlify-style redirects, this repo includes:
+
+- `public/_redirects`
+
+This ensures deep links (e.g. `/portfolio/l8log-web`) resolve correctly and unknown routes return a real 404.
+
 ```sh
 npm create astro@latest -- --template minimal
 ```
@@ -41,6 +110,10 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+Notes:
+
+- This repo uses `pnpm` in practice (e.g. `pnpm dev`, `pnpm build`).
 
 ## 👀 Want to learn more?
 

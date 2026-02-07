@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
+const typography = require('@tailwindcss/typography')
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -20,9 +21,9 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        sans: [...defaultTheme.fontFamily.sans],
       },
     },
   },
-  plugins: [],
+  plugins: [typography],
 }

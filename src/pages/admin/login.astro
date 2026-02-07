@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+export const prerender = false
+
+// If already authenticated, redirect to tokens page
+const authCookie = Astro.cookies.get('admin_auth')?.value
+if (authCookie === 'authenticated') {
+  return Astro.redirect('/admin/tokens')
+}
+
+// Handle POST login
+let error = ''
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData()
+    const username = formData.get('username')?.toString() || ''
+    const password = formData.get('password')?.toString() || ''
+    
+    const adminUser = import.meta.env.ADMIN_USERNAME
+    const adminPass = import.meta.env.ADMIN_PASSWORD
+    
+    if (username === adminUser && password === adminPass) {
+      Astro.cookies.set('admin_auth', 'authenticated', {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 8, // 8 hours
+      })
+      return Astro.redirect('/admin/tokens')
+    } else {
+      error = 'Invalid username or password'
+    }
+  } catch {
+    error = 'An error occurred. Please try again.'
+  }
+}
+---
+
+<BaseLayout title="Admin Login" description="Admin authentication">
+  <div class="relative min-h-[calc(100vh-200px)]">
+    <div class="relative flex min-h-[calc(100vh-200px)] flex-col items-center justify-center px-4 py-10">
+      <div class="w-full max-w-md">
+        <div class="rounded-2xl border border-white/10 bg-black/70 px-6 py-8 sm:px-10">
+          <div class="text-center">
+            <h1 class="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              Admin Access
+            </h1>
+            <p class="mt-2 text-sm text-slate-300">
+              Sign in to manage code access tokens
+            </p>
+          </div>
+
+          {error && (
+            <div class="mt-6 rounded-lg border border-red-500/20 bg-red-900/10 p-4" role="alert" aria-live="assertive">
+              <p class="text-sm text-red-100">{error}</p>
+            </div>
+          )}
+
+          <form method="POST" class="mt-6 space-y-4">
+            <div>
+              <label for="username" class="block text-sm font-semibold text-white">
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                autocomplete="username"
+                class="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-400 transition focus:border-brown-400 focus:outline-none focus:ring-2 focus:ring-brown-400/50"
+                placeholder="Enter username"
+              />
+            </div>
+
+            <div>
+              <label for="password" class="block text-sm font-semibold text-white">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                autocomplete="current-password"
+                class="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-slate-400 transition focus:border-brown-400 focus:outline-none focus:ring-2 focus:ring-brown-400/50"
+                placeholder="Enter password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full rounded-lg bg-brown-900/40 px-5 py-3 text-sm font-semibold text-brown-100 transition hover:bg-brown-900/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200"
+            >
+              Sign in
+            </button>
+          </form>
+
+          <p class="mt-6 text-center text-xs text-slate-400">
+            This area is restricted to authorised personnel only.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

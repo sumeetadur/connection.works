@@ -1,0 +1,17 @@
+{
+  "name": "Connection Works",
+  "short_name": "Connection",
+  "description": "Frontend engineering for product teams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

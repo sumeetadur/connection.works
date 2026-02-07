@@ -1,0 +1,6 @@
+# Netlify-style redirects for static hosting
+# Ensure client-side routing and deep links return the correct status.
+
+/portfolio/*   /portfolio/index.html   200
+
+/*            /404.html               404
