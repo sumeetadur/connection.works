@@ -56,17 +56,17 @@ const clients = [
     </div>
 
     <div class="relative flex min-h-[calc(100vh-120px)] flex-col items-center justify-center px-4 py-10">
-      <div class="w-full max-w-4xl space-y-6">
-        <div class="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-black/70 px-6 py-10 sm:px-10 sm:py-12">
-          <div class="grid items-center gap-8 md:flex">
-            <div class="space-y-3 sm:space-y-4">
+      <div class="w-full max-w-7xl space-y-6">
+        <div class="mx-auto max-w-7xl rounded-2xl border border-white/10 bg-black/70 px-6 py-10 sm:px-10 sm:py-12">
+          <div class="grid items-center gap-8 md:flex md:justify-between">
+            <div class="space-y-3 sm:space-y-4 md:flex-1">
               <!-- <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brown-300">Contract front-end engineering</p> -->
               <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
                 Connection Works
               </h1>
               <p class="text-xl text-brown-300 sm:text-2xl">{siteConfig.tagline}</p>
               <p class="text-sm text-brown-300 !mt-1 sm:text-base">by {siteConfig.personName}</p>
-              <p class="max-w-2xl text-sm text-slate-200 sm:text-base">
+              <p class="text-sm text-slate-200 sm:text-base">
                 Reliable front-end delivery: predictable state management, resilient UI patterns, and performant experiences.
               </p>
             </div>
@@ -88,7 +88,7 @@ const clients = [
           </div>
         </div>
 
-        <div class="mx-auto max-w-4xl rounded-lg bg-black/70 p-5">
+        <div class="mx-auto max-w-7xl rounded-lg bg-black/70 p-5">
           <h2 class="text-base font-semibold text-white">What I do</h2>
           <div class="mt-5 grid gap-4 sm:grid-cols-3">
             {siteConfig.primaryServices.map(
@@ -102,9 +102,9 @@ const clients = [
           </div>
         </div>
 
-        <div class="mx-auto max-w-4xl rounded-lg bg-black/70 p-4">
+        <div class="mx-auto max-w-7xl rounded-lg bg-black/70 p-4">
           <h2 class="text-base font-semibold text-white">Worked With</h2>
-          <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+          <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2 md:grid-cols-3">
             {
               clients.map((client) => (
                 <ClientLogoLink
@@ -118,11 +118,11 @@ const clients = [
           </div>
         </div>
 
-        <div class="mx-auto w-full max-w-4xl rounded-lg bg-black/70 p-5">
+        <div class="mx-auto w-full max-w-7xl rounded-lg bg-black/70 p-5">
           <TestimonialGrid testimonials={siteConfig.testimonials} />
         </div>
 
-        <div class="mx-auto w-full max-w-4xl rounded-lg bg-black/70 p-5">
+        <div class="mx-auto max-w-7xl rounded-lg bg-black/70 p-5">
           <ProcessSteps steps={siteConfig.engagementProcess} />
         </div>
       </div>

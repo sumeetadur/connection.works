@@ -12,7 +12,7 @@ const { href, name, src } = Astro.props
   aria-label={`${name} (opens in a new tab)`}
   {href}
 >
-  <Image class="max-h-7 max-w-xs object-contain" {src} alt={name} />
+  <Image class="max-h-7 max-w-full object-contain" {src} alt={name} />
   <div
     class="absolute inset-0 hidden bg-slate-500 group-hover:block group-hover:bg-opacity-20 group-focus-visible:block group-focus-visible:bg-opacity-20"
   >

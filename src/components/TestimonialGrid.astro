@@ -7,163 +7,25 @@ const { testimonials } = Astro.props as {
     company?: string
   }>
 }
-
-// Triple the items for seamless infinite scroll
-const tripled = [...testimonials, ...testimonials, ...testimonials]
 ---
 
-<section aria-label="Testimonials" class="group">
+<section aria-label="Testimonials" class="w-full">
   <h2 class="text-base font-semibold text-white">What clients value</h2>
-  <div 
-    class="testimonial-track mt-4 overflow-x-auto scroll-smooth cursor-grab focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-400/50 rounded-lg" 
-    tabindex="0"
-    aria-label="Testimonials carousel. Use Tab to focus, then arrow keys to navigate, or drag to scroll."
-  >
-    <div class="testimonial-scroll flex gap-4 px-1 py-1">
-      {tripled.map((t) => (
-        <figure class="w-[min(85vw,26rem)] shrink-0 rounded-xl border border-white/10 bg-white/5 p-6">
-          <blockquote class="text-sm text-slate-200 whitespace-pre-line">"{t.quote}"</blockquote>
-          <figcaption class="mt-4 text-sm text-slate-300">
-            <span class="font-semibold text-white">{t.name}</span>
-            {t.role || t.company ? (
-              <span class="text-slate-400">
-                {' '}
-                — {[t.role, t.company].filter(Boolean).join(', ')}
-              </span>
-            ) : null}
-          </figcaption>
-        </figure>
-      ))}
-    </div>
+  <div class="mt-6 grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    {testimonials.map((t) => (
+      <figure class="rounded-xl border border-white/10 bg-white/5 p-8 flex flex-col">
+        <blockquote class="text-sm leading-relaxed text-slate-200 whitespace-pre-line flex-1">"{t.quote}"</blockquote>
+        <figcaption class="mt-6 text-sm text-slate-300">
+          <span class="font-semibold text-white">{t.name}</span>
+          {t.role || t.company ? (
+            <span class="text-slate-400">
+              {' '}
+              — {[t.role, t.company].filter(Boolean).join(', ')}
+            </span>
+          ) : null}
+        </figcaption>
+      </figure>
+    ))}
   </div>
-  <p class="mt-2 text-xs text-slate-400 sr-only" aria-live="polite" data-marquee-live>
-    Use arrow keys to navigate testimonials
-  </p>
 </section>
 
-<style>
-  .testimonial-track {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.2) transparent;
-    -webkit-overflow-scrolling: touch;
-  }
-  .testimonial-track::-webkit-scrollbar {
-    height: 8px;
-  }
-  .testimonial-track::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .testimonial-track::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.2);
-    border-radius: 4px;
-  }
-  .testimonial-track::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.35);
-  }
-  
-  /* Grab cursor for mouse drag */
-  .testimonial-track:active {
-    cursor: grabbing;
-  }
-  
-  @media (prefers-reduced-motion: no-preference) {
-    .testimonial-scroll {
-      animation: testimonial-marquee 60s linear infinite;
-    }
-    /* Pause on hover, focus, or when the group is being interacted with */
-    .group:hover .testimonial-scroll,
-    .testimonial-track:focus-within + .testimonial-scroll,
-    .testimonial-track:focus .testimonial-scroll {
-      animation-play-state: paused;
-    }
-    /* Also pause when scrolling manually via JavaScript */
-    .testimonial-track.is-manual-scrolling .testimonial-scroll {
-      animation-play-state: paused;
-    }
-  }
-  
-  @media (prefers-reduced-motion: reduce) {
-    .testimonial-scroll {
-      animation: none;
-    }
-  }
-  
-  @keyframes testimonial-marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-33.333%);
-    }
-  }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const track = document.querySelector('.testimonial-track')
-    if (!track) return
-
-    let isDragging = false
-    let startX = 0
-    let scrollLeft = 0
-    let dragStarted = false
-
-    // Mouse drag handling
-    track.addEventListener('mousedown', function(e: MouseEvent) {
-      isDragging = true
-      dragStarted = false
-      startX = e.pageX - track.scrollLeft
-      scrollLeft = track.scrollLeft
-      track.classList.add('cursor-grabbing user-select-none')
-    })
-
-    document.addEventListener('mousemove', function(e: MouseEvent) {
-      if (!isDragging) return
-      e.preventDefault()
-      dragStarted = true
-      const x = e.pageX - track.scrollLeft
-      const walk = (x - startX) * -1
-      track.scrollLeft = scrollLeft + walk
-    })
-
-    document.addEventListener('mouseup', function() {
-      if (isDragging && dragStarted) {
-        // Prevent click events after drag
-        setTimeout(function() {
-          dragStarted = false
-        }, 10)
-      }
-      isDragging = false
-      track.classList.remove('cursor-grabbing user-select-none')
-    })
-
-    // Prevent clicks on links during drag
-    track.addEventListener('click', function(e) {
-      if (dragStarted) {
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }, true)
-
-    // Keyboard navigation
-    track.addEventListener('keydown', function(e: KeyboardEvent) {
-      const cardWidth = track.querySelector('figure')?.offsetWidth || 400
-      const gap = 16
-      const scrollAmount = cardWidth + gap
-
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        track.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-      } else if (e.key === 'Home') {
-        e.preventDefault()
-        track.scrollTo({ left: 0, behavior: 'smooth' })
-      } else if (e.key === 'End') {
-        e.preventDefault()
-        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' })
-      }
-    })
-  })
-</script>
