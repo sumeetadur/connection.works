@@ -1,0 +1,15 @@
+---
+export const prerender = false
+
+const now = new Date()
+---
+<>
+  {now.toLocaleTimeString('en-GB', {
+    timeZone: 'Europe/London',
+    hour: '2-digit',
+    minute: '2-digit'
+  })} {new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/London',
+      timeZoneName: 'short'
+    }).format(now).includes('BST') ? 'BST' : 'GMT'}
+</>

@@ -1,131 +1,297 @@
 ---
-import { Image } from 'astro:assets'
-import ClientLogoLink from '@components/ClientLogoLink.astro'
-import BgImg from '@images/bg.png'
+export const prerender = false
+
 import BaseLayout from '@layouts/BaseLayout.astro'
-import { siteConfig } from '../siteConfig'
-import ProcessSteps from '../components/ProcessSteps.astro'
-import TestimonialGrid from '../components/TestimonialGrid.astro'
+import { siteConfig, getAvailabilityConfig } from '../siteConfig'
+import CodeShowcase from '../components/CodeShowcase.astro'
+
+// Dynamic availability calculation - synced with contact page
+const now = new Date()
+const currentYear = now.getFullYear()
+const currentMonth = now.getMonth()
+const currentQuarter = Math.floor(currentMonth / 3) + 1
+
+// Use central availability status and config from siteConfig
+const availabilityStatus = siteConfig.availabilityStatus
+const availabilityConfig = getAvailabilityConfig(currentQuarter, currentYear)
+const currentStatus = availabilityConfig[availabilityStatus]
 
 const clientLogos = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/images/clients/*.png'
+  '/src/images/clients/*.png',
+  { eager: true }
 )
+
 const clients = [
-  {
-    id: 'rt',
-    name: 'Remote Tech',
-    href: 'https://remote-tech.co.uk',
-  },
-  {
-    id: 'bds',
-    name: 'Bathroom Design Shop',
-    href: 'https://bathroomdesignshop.co.uk',
-  },
-  {
-    id: 'ontrack',
-    name: 'OnTrack Retail',
-    href: 'https://ontrackretail.co.uk',
-  },
-  {
-    id: 'pearson',
-    name: 'Pearson',
-    href: 'https://pearson.com',
-  },
-  {
-    id: 'bcgdv',
-    name: 'BCG: Digital Ventures',
-    href: 'https://bcgdv.com',
-  },
-  {
-    id: 'hof',
-    name: 'House of Fraser',
-    href: 'https://houseoffraser.co.uk',
-  },
+  { id: 'rt', name: 'Remote Tech', href: 'https://remote-tech.co.uk' },
+  { id: 'bds', name: 'Bathroom Design Shop', href: 'https://bathroomdesignshop.co.uk' },
+  { id: 'ontrack', name: 'OnTrack Retail', href: 'https://ontrackretail.co.uk' },
+  { id: 'pearson', name: 'Pearson', href: 'https://pearson.com' },
+  { id: 'bcgdv', name: 'BCG: Digital Ventures', href: 'https://bcgdv.com' },
+  { id: 'hof', name: 'House of Fraser', href: 'https://houseoffraser.co.uk' },
 ]
 ---
 
-<BaseLayout title="Home" description="Connection Works Web Development">
-  <div class="relative min-h-[calc(100vh-120px)]">
-    <div class="absolute inset-0">
-      <Image
-        class="h-full w-full object-cover object-top"
-        src={BgImg}
-        alt="Laptop on desk at night"
-      />
-      <div aria-hidden="true" class="absolute inset-0 bg-black/70"></div>
+<BaseLayout 
+  title="Home" 
+  description="Senior Front-End Engineer — React, TypeScript & resilient UI patterns. Available for contracts."
+>
+  {/* Hero Section - Full viewport with gradient aurora effect */}
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    {/* Animated gradient background */}
+    <div class="absolute inset-0 bg-slate-950">
+      {/* Primary aurora gradient */}
+      <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"></div>
+      
+      {/* Floating gradient orbs */}
+      <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[100px] animate-pulse-slow" style="animation-delay: 3s;"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-accent-500/5 to-violet-500/5 rounded-full blur-[150px]"></div>
+      
+    {/* Unique brand element: Connection node pattern */}
+    <svg 
+      class="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none" 
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <pattern id="connection-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+          <circle cx="50" cy="50" r="2" fill="currentColor" class="text-accent-400"/>
+          <circle cx="0" cy="0" r="1.5" fill="currentColor" class="text-slate-400"/>
+          <circle cx="100" cy="0" r="1.5" fill="currentColor" class="text-slate-400"/>
+          <circle cx="0" cy="100" r="1.5" fill="currentColor" class="text-slate-400"/>
+          <circle cx="100" cy="100" r="1.5" fill="currentColor" class="text-slate-400"/>
+          <path d="M50 50 L0 0 M50 50 L100 0 M50 50 L0 100 M50 50 L100 100" 
+                stroke="currentColor" 
+                stroke-width="0.5" 
+                class="text-slate-600"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#connection-pattern)"/>
+    </svg>
     </div>
-
-    <div class="relative flex min-h-[calc(100vh-120px)] flex-col items-center justify-center px-4 py-10">
-      <div class="w-full max-w-7xl space-y-6">
-        <div class="mx-auto max-w-7xl rounded-2xl border border-white/10 bg-black/70 px-6 py-10 sm:px-10 sm:py-12">
-          <div class="grid items-center gap-8 md:flex md:justify-between">
-            <div class="space-y-3 sm:space-y-4 md:flex-1">
-              <!-- <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brown-300">Contract front-end engineering</p> -->
-              <h1 class="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Connection Works
-              </h1>
-              <p class="text-xl text-brown-300 sm:text-2xl">{siteConfig.tagline}</p>
-              <p class="text-sm text-brown-300 !mt-1 sm:text-base">by {siteConfig.personName}</p>
-              <p class="text-sm text-slate-200 sm:text-base">
-                Reliable front-end delivery: predictable state management, resilient UI patterns, and performant experiences.
-              </p>
-            </div>
-
-            <div class="flex flex-initial shrink-0 flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-5 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
-              <a
-                href="/portfolio"
-                class="w-full rounded-lg shrink-0 bg-white/10 px-5 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200 sm:w-auto"
-              >
-                View portfolio
-              </a>
-              <a
-                href="/contact"
-                class="w-full rounded-lg bg-brown-900/40 px-5 py-3 text-center text-sm font-semibold text-brown-100 transition hover:bg-brown-900/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown-200 sm:w-auto"
-              >
-                Contact
-              </a>
-            </div>
-          </div>
+    
+    {/* Hero content */}
+    <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+      <div class="flex flex-col items-center text-center">
+        {/* Tagline badge */}
+        <div class="inline-flex items-center gap-2 rounded-full border border-accent-500/30 bg-accent-500/10 px-4 py-1.5 mb-8">
+          <span class="relative flex h-2 w-2">
+            <span class={`animate-ping absolute inline-flex h-full w-full rounded-full ${currentStatus.indicator} opacity-75`}></span>
+            <span class={`relative inline-flex rounded-full h-2 w-2 ${currentStatus.indicator}`}></span>
+          </span>
+          <span class="text-sm font-medium text-accent-300">{currentStatus.badge}</span>
         </div>
-
-        <div class="mx-auto max-w-7xl rounded-lg bg-black/70 p-5">
-          <h2 class="text-base font-semibold text-white">What I do</h2>
-          <div class="mt-5 grid gap-4 sm:grid-cols-3">
-            {siteConfig.primaryServices.map(
-              (s: (typeof siteConfig.primaryServices)[number]) => (
-              <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-                <h3 class="text-sm font-semibold text-white">{s.title}</h3>
-                <p class="mt-2 text-sm text-slate-200">{s.description}</p>
-              </div>
-              )
-            )}
-          </div>
+        
+        {/* Main headline - Large typography like Linear/Vercel */}
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-tighter text-white max-w-4xl">
+          Reliable front-end delivery
+        </h1>
+        
+        {/* Subheadline */}
+        <p class="mt-6 text-xl sm:text-2xl text-slate-400 max-w-2xl leading-relaxed">
+          Predictable state management, resilient UI patterns, and performant experiences for demanding products.
+        </p>
+        
+        {/* CTA buttons */}
+        <div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
+          <a
+            href="/portfolio"
+            class="group relative inline-flex items-center justify-center rounded-lg bg-accent-600 px-6 py-3 text-base font-semibold text-white transition-all hover:bg-accent-500 hover:shadow-lg hover:shadow-accent-500/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
+          >
+            View portfolio
+            <svg class="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center rounded-lg border border-slate-700 bg-slate-900/50 px-6 py-3 text-base font-semibold text-slate-300 transition-all hover:bg-slate-800 hover:text-white hover:border-slate-600"
+          >
+            Get in touch
+          </a>
         </div>
-
-        <div class="mx-auto max-w-7xl rounded-lg bg-black/70 p-4">
-          <h2 class="text-base font-semibold text-white">Worked With</h2>
-          <div class="mt-4 grid grid-cols-1 gap-0.5 sm:grid-cols-2 md:grid-cols-3">
-            {
-              clients.map((client) => (
-                <ClientLogoLink
-                  {...client}
-                  src={clientLogos[
-                    `/src/images/clients/${client.id}.png`
-                  ]()}
-                />
-              ))
-            }
-          </div>
-        </div>
-
-        <div class="mx-auto w-full max-w-7xl rounded-lg bg-black/70 p-5">
-          <TestimonialGrid testimonials={siteConfig.testimonials} />
-        </div>
-
-        <div class="mx-auto max-w-7xl rounded-lg bg-black/70 p-5">
-          <ProcessSteps steps={siteConfig.engagementProcess} />
+        
+        {/* Code showcase - The visual hook */}
+        <div class="mt-16 w-full max-w-3xl animate-float">
+          <CodeShowcase />
         </div>
       </div>
     </div>
-  </div>
+    
+    {/* Scroll indicator */}
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500">
+      <span class="text-xs font-medium uppercase tracking-wider">Scroll</span>
+      <div class="w-5 h-8 rounded-full border-2 border-slate-700 flex items-start justify-center p-1">
+        <div class="w-1 h-2 bg-slate-500 rounded-full animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+  
+  {/* Services Section - Minimal cards */}
+  <section class="relative py-24 sm:py-32 border-t border-slate-800/50">
+    <div class="absolute inset-0 bg-slate-950"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-slate-950"></div>
+    
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+          What I deliver
+        </h2>
+        <p class="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+          Clean architecture, resilient patterns, and fast interfaces — built with React and TypeScript.
+        </p>
+      </div>
+      
+      <div class="grid sm:grid-cols-3 gap-6">
+        {siteConfig.primaryServices.map((service) => (
+          <div class="group relative rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-accent-500/30 hover:bg-slate-800/50">
+            <div class="absolute inset-0 rounded-xl bg-gradient-to-br from-accent-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
+            <div class="relative">
+              <h3 class="text-lg font-semibold text-white mb-2">{service.title}</h3>
+              <p class="text-slate-400 leading-relaxed">{service.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  
+  {/* Clients Section - Clean horizontal layout */}
+  <section class="relative py-16 sm:py-24 border-t border-slate-800/50">
+    <div class="absolute inset-0 bg-slate-950"></div>
+    
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-center text-sm font-medium text-slate-500 uppercase tracking-wider mb-10">
+        Trusted by leading organisations
+      </p>
+      
+      <div class="flex flex-wrap justify-center items-center gap-4 sm:gap-6">
+        {clients.map((client) => {
+          const logoPath = `/src/images/clients/${client.id}.png`
+          const hasLogo = logoPath in clientLogos
+          
+          if (!hasLogo) {
+            return (
+              <a 
+                href={client.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center gap-3 px-5 py-3 rounded-xl border border-slate-800 bg-slate-900/50 hover:border-accent-500/30 hover:bg-slate-800/50 transition-all"
+              >
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent-500/20 to-violet-500/20 flex items-center justify-center">
+                  <span class="text-accent-400 font-bold text-sm">{client.name.split(' ').map(n => n[0]).join('').slice(0, 2)}</span>
+                </div>
+                <span class="text-sm font-medium text-slate-400 group-hover:text-slate-200 transition-colors">{client.name}</span>
+              </a>
+            )
+          }
+          
+          const logoModule = clientLogos[logoPath]
+          return (
+            <a 
+              href={client.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex items-center gap-2 text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              <img 
+                src={logoModule.default.src}
+                alt={client.name}
+                class="h-8 w-auto opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
+              />
+            </a>
+          )
+        })}
+      </div>
+    </div>
+  </section>
+  
+  {/* Featured Testimonial - Single impactful quote */}
+  <section class="relative py-24 sm:py-32 border-t border-slate-800/50">
+    <div class="absolute inset-0 bg-slate-950"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-accent-900/10 via-slate-950 to-violet-900/10"></div>
+    
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <svg class="w-12 h-12 mx-auto text-accent-500/30 mb-8" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+      </svg>
+      
+      <blockquote class="text-2xl sm:text-3xl font-medium text-slate-200 leading-relaxed">
+        "Sumeet is one of the most dedicated persons I've ever worked with... one of the few core FE devs I met that really takes the time to understand the project and make it better."
+      </blockquote>
+      
+      <div class="mt-8 flex items-center justify-center gap-4">
+        <div class="text-left">
+          <p class="font-semibold text-white">Victor Petrescu</p>
+          <p class="text-sm text-slate-400">Senior Software Engineer</p>
+        </div>
+      </div>
+      
+      <div class="mt-12">
+        <a 
+          href="#testimonials" 
+          class="inline-flex items-center gap-2 text-accent-400 hover:text-accent-300 font-medium transition-colors"
+        >
+          See what clients say
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  {/* Testimonials Grid Section */}
+  <section id="testimonials" class="relative py-24 sm:py-32 border-t border-slate-800/50">
+    <div class="absolute inset-0 bg-slate-950"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-accent-900/10 via-slate-950 to-violet-900/10"></div>
+    
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+          Client testimonials
+        </h2>
+        <p class="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
+          Feedback from engineers and product managers I've worked with.
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {siteConfig.testimonials.map((testimonial) => (
+          <div class="group rounded-xl border border-slate-800 bg-slate-900/50 backdrop-blur-sm overflow-hidden hover:border-accent-500/30 transition-all">
+            <div class="p-6">
+              <svg class="w-8 h-8 text-accent-500/30 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+              </svg>
+              <blockquote class="text-slate-300 leading-relaxed text-sm">
+                "{testimonial.quote}"
+              </blockquote>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-800/50 bg-slate-900/30">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-full bg-accent-500/20 flex items-center justify-center shrink-0">
+                  <span class="text-accent-400 font-semibold text-sm">
+                    {testimonial.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                </div>
+                <div class="min-w-0">
+                  <p class="font-semibold text-white text-sm truncate">{testimonial.name}</p>
+                  <p class="text-xs text-slate-400 truncate">{testimonial.role}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      <div class="mt-12 text-center">
+        <a 
+          href="/contact"
+          class="inline-flex items-center justify-center rounded-lg bg-accent-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-accent-500 hover:shadow-lg hover:shadow-accent-500/25"
+        >
+          Work with me
+        </a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

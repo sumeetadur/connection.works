@@ -4,10 +4,12 @@ export const siteConfig = {
   personName: 'Sumeet Adur',
   tagline: 'Web Development',
   location: 'UK (remote-friendly)',
-  availabilityLine: 'Available for contracts',
   email: 'sumeet@connection.works',
   linkedInUrl: 'https://www.linkedin.com/in/sumeetadur',
   githubUrl: 'https://github.com/sumeetadur',
+  // Central availability status switch
+  // Change this to: 'available' | 'limited' | 'unavailable' | 'future'
+  availabilityStatus: 'available' as const,
   primaryServices: [
     {
       title: 'Front-end delivery',
@@ -77,3 +79,40 @@ He sets a very high standard for front-end engineering and professionalism, and 
     },
   ],
 } as const
+
+// Centralized availability configuration
+// Use this function in both homepage and contact page
+export function getAvailabilityConfig(currentQuarter: number, currentYear: number) {
+  return {
+    available: {
+      badge: `Available for Q${currentQuarter} ${currentYear}`,
+      indicator: 'bg-green-400',
+      description: 'Currently accepting new projects',
+      cta: 'Start a conversation',
+      subtext: "Let's discuss your project"
+    },
+    limited: {
+      badge: `Limited availability — Q${currentQuarter} ${currentYear}`,
+      indicator: 'bg-amber-400',
+      description: 'Selective about new engagements',
+      cta: 'Book a discovery call',
+      subtext: 'Priority given to long-term partnerships'
+    },
+    unavailable: {
+      badge: `Fully booked — Q${currentQuarter} ${currentYear}`,
+      indicator: 'bg-red-400',
+      description: 'Not accepting new projects currently',
+      cta: 'Join the waitlist',
+      subtext: `Booking for Q${currentQuarter === 4 ? 1 : currentQuarter + 1} ${currentQuarter === 4 ? currentYear + 1 : currentYear}`
+    },
+    future: {
+      badge: 'Open for future projects',
+      indicator: 'bg-accent-400',
+      description: 'Available for strategic partnerships',
+      cta: 'Discuss future work',
+      subtext: 'Side projects and advisory roles welcome'
+    }
+  }
+}
+
+export type AvailabilityStatus = 'available' | 'limited' | 'unavailable' | 'future'

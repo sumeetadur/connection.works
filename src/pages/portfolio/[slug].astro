@@ -3,7 +3,6 @@ import { Image } from 'astro:assets'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { getCollection } from 'astro:content'
 import { render } from 'astro:content'
-import BgImg from '../../images/bg.png'
 import ProjectMedia from '../../components/ProjectMedia.astro'
 import ProjectCodeAccess from '../../components/ProjectCodeAccess.astro'
 import ExternalLinkIcon from '../../components/ExternalLinkIcon.astro'
@@ -24,84 +23,116 @@ const { Content } = await render(entry)
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.summary}>
-  <div class="relative min-h-[calc(100vh-200px)]">
-    <div class="absolute inset-0">
-      <Image
-        class="h-full w-full object-cover object-top"
-        src={BgImg}
-        alt=""
-      />
-      <div aria-hidden="true" class="absolute inset-0 bg-black/70"></div>
+  <!-- Hero Section with dramatic typography -->
+  <section class="relative pt-24 pb-12 sm:pt-32 sm:pb-16">
+    <!-- Gradient Background -->
+    <div class="fixed inset-0 -z-10">
+      <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.15),transparent_50%)]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.1),transparent_50%)]"></div>
     </div>
 
-    <article class="relative mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div class="mx-auto max-w-7xl">
-      <a class="text-sm text-slate-300 hover:text-white" href="/portfolio">
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <a 
+        class="inline-flex items-center text-sm text-slate-400 hover:text-accent-400 transition-colors" 
+        href="/portfolio"
+      >
+        <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
         Back to portfolio
       </a>
-      <h1 class="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+      
+      <h1 class="mt-8 text-4xl font-semibold tracking-tighter text-white sm:text-5xl lg:text-6xl max-w-4xl">
         {entry.data.title}
       </h1>
-      <p class="mt-2 text-slate-300">
-        <span class="font-semibold text-white">{entry.data.client}</span>
-        <span class="mx-2 text-white/20">|</span>
+      
+      <div class="mt-6 flex flex-wrap items-center gap-3 text-slate-400">
+        <span class="text-lg font-medium text-white">{entry.data.client}</span>
+        <span class="text-slate-600">•</span>
         <span>{entry.data.role}</span>
-        <span class="mx-2 text-white/20">|</span>
+        <span class="text-slate-600">•</span>
         <span>{entry.data.dateRange}</span>
-      </p>
-
-      <!-- {entry.data.nda ? (
-        <div class="mt-6 rounded-lg border border-brown-700/40 bg-brown-900/20 p-4 text-sm text-brown-100">
-          This project write-up is NDA-safe. Any screenshots or recordings are redacted to remove customer data and internal URLs.
-        </div>
-      ) : null} -->
+      </div>
 
       {entry.data.links.length > 0 ? (
-        <div class="mt-6 flex flex-wrap gap-3">
+        <div class="mt-8 flex flex-wrap gap-3">
           {entry.data.links.map((l) => (
             <a
-              class="rounded-md bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
+              class="inline-flex items-center rounded-lg bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-500 hover:shadow-lg hover:shadow-accent-500/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
               href={l.href}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${l.label} (opens in a new tab)`}
             >
               {l.label}
-              <ExternalLinkIcon class="h-4 w-4 inline-block ml-1" />
+              <ExternalLinkIcon class="h-4 w-4 ml-2" />
             </a>
           ))}
         </div>
       ) : null}
+    </div>
+  </section>
 
-      <ProjectMedia media={entry.data.media} nda={entry.data.nda} />
+  <!-- Project Content -->
+  <section class="relative pb-24 sm:pb-32">
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="lg:grid lg:grid-cols-[1fr,320px] lg:gap-12">
+        <div>
+          <ProjectMedia media={entry.data.media} nda={entry.data.nda} />
 
       <!-- {entry.data.codeAccess ? (
         <ProjectCodeAccess codeAccess={entry.data.codeAccess} projectSlug={entry.slug} />
       ) : null} -->
 
-      <div class="prose prose-invert mt-10 max-w-none prose-headings:tracking-tight prose-a:text-brown-300">
-        <Content />
-      </div>
-
-      <!-- <section class="mt-12 grid gap-8 sm:grid-cols-2">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-6">
-          <h2 class="text-base font-semibold text-white">Highlights</h2>
-          <ul class="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-300">
-            {entry.data.highlights.map((h) => (
-              <li>{h}</li>
-            ))}
-          </ul>
+          <div class="prose prose-invert prose-lg max-w-none prose-headings:tracking-tight prose-headings:font-semibold prose-a:text-accent-400 hover:prose-a:text-accent-300 prose-strong:text-white">
+            <Content />
+          </div>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-6">
-          <h2 class="text-base font-semibold text-white">Outcomes</h2>
-          <ul class="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-300">
-            {entry.data.outcomes.map((o) => (
-              <li>{o}</li>
-            ))}
-          </ul>
-        </div>
-      </section> -->
+        
+        <!-- Sidebar -->
+        <aside class="mt-12 lg:mt-0">
+          <div class="sticky top-24 space-y-6">
+            <div class="rounded-xl border border-slate-800 bg-slate-900/50 p-6">
+              <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Project details</h3>
+              <dl class="space-y-4">
+                <div>
+                  <dt class="text-sm text-slate-500">Client</dt>
+                  <dd class="text-sm font-medium text-slate-300">{entry.data.client}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-slate-500">Role</dt>
+                  <dd class="text-sm font-medium text-slate-300">{entry.data.role}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-slate-500">Duration</dt>
+                  <dd class="text-sm font-medium text-slate-300">{entry.data.dateRange}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-slate-500 mb-2">Technologies</dt>
+                  <dd class="flex flex-wrap gap-2">
+                    {entry.data.stack.map((tech) => (
+                      <span class="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-300">
+                        {tech}
+                      </span>
+                    ))}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            
+            <a
+              href="/contact"
+              class="group flex items-center justify-center gap-2 rounded-xl border border-accent-500/30 bg-accent-500/10 p-4 text-sm font-semibold text-accent-300 hover:bg-accent-500/20 transition-colors"
+            >
+              Discuss a similar project
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        </aside>
       </div>
-    </article>
-  </div>
+    </div>
+  </section>
 </BaseLayout>

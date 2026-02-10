@@ -3,15 +3,15 @@ import CurrentYear from './CurrentYear.astro'
 import { siteConfig } from '../siteConfig'
 ---
 
-<footer class="mt-16 border-t border-white/10">
-  <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm text-slate-200 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+<footer class="mt-16 border-t border-slate-800/50">
+  <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-10 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6">
     <div class="relative">
       <span>&copy; <CurrentYear /> {siteConfig.companyName}. All rights reserved.</span>
     </div>
     <div class="flex flex-wrap gap-x-4 gap-y-2 relative">
-      <a class="hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-400/50 rounded px-1 py-0.5" href="/portfolio">Portfolio</a>
-      <a class="hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-400/50 rounded px-1 py-0.5" href="/about">About</a>
-      <a class="hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-400/50 rounded px-1 py-0.5" href="/contact">Contact</a>
+      <a class="hover:text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 rounded px-1 py-0.5" href="/portfolio">Portfolio</a>
+      <a class="hover:text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 rounded px-1 py-0.5" href="/about">About</a>
+      <a class="hover:text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/50 rounded px-1 py-0.5" href="/contact">Contact</a>
     </div>
   </div>
 </footer>
