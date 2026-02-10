@@ -12,12 +12,14 @@ const items = [
 
 <nav aria-label="Primary" class="w-full border-b border-slate-800/50">
   <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+    {/* Logo - truncate on mobile */}
     <a href="/" class="inline-flex items-center gap-2 font-semibold tracking-tight text-white">
       <span class="sr-only">{siteConfig.siteName}</span>
-      <span aria-hidden="true" class="text-lg">{siteConfig.siteName}</span>
+      <span aria-hidden="true" class="text-lg truncate max-w-[140px] sm:max-w-none">{siteConfig.siteName}</span>
     </a>
 
-    <div class="flex items-center gap-1">
+    {/* Desktop Navigation */}
+    <div class="hidden md:flex items-center gap-1">
       {items.map((item) => {
         const isActive =
           pathname === item.href ||
@@ -39,10 +41,123 @@ const items = [
 
       <a
         href="/contact"
-        class="ml-2 hidden rounded-md bg-accent-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-accent-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500 sm:inline-flex"
+        class="ml-2 rounded-md bg-accent-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-accent-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
       >
         Hire me
       </a>
     </div>
+
+    {/* Mobile Menu Button */}
+    <button
+      type="button"
+      id="mobile-menu-btn"
+      class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition"
+      aria-label="Open menu"
+      aria-expanded="false"
+    >
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+
+  {/* Mobile Menu Overlay */}
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 z-50 md:hidden hidden"
+    aria-hidden="true"
+  >
+    {/* Backdrop */}
+    <div class="mobile-menu-backdrop absolute inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity opacity-0"></div>
+    
+    {/* Drawer */}
+    <div class="mobile-menu-drawer absolute right-0 top-0 h-full w-[280px] bg-slate-900 border-l border-slate-800 transform translate-x-full transition-transform duration-300 ease-out">
+      <div class="flex items-center justify-between px-4 py-4 border-b border-slate-800">
+        <span class="text-lg font-semibold text-white">Menu</span>
+        <button
+          type="button"
+          id="mobile-menu-close"
+          class="inline-flex items-center justify-center rounded-md p-2 text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition"
+          aria-label="Close menu"
+        >
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="p-4 space-y-1">
+        {items.map((item) => {
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/' && pathname.startsWith(`${item.href}/`))
+          return (
+            <a
+              href={item.href}
+              aria-current={isActive ? 'page' : undefined}
+              class={`block rounded-md px-4 py-3 text-base font-medium transition ${
+                isActive
+                  ? 'bg-accent-500/10 text-accent-300'
+                  : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
+              }`}
+            >
+              {item.label}
+            </a>
+          )
+        })}
+        
+        <a
+          href="/contact"
+          class="mt-4 block w-full rounded-md bg-accent-600 px-4 py-3 text-center text-base font-semibold text-white transition hover:bg-accent-500"
+        >
+          Hire me
+        </a>
+      </div>
+    </div>
   </div>
 </nav>
+
+<script>
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn')
+  const mobileMenuClose = document.getElementById('mobile-menu-close')
+  const mobileMenu = document.getElementById('mobile-menu')
+  const backdrop = mobileMenu?.querySelector('.mobile-menu-backdrop')
+  const drawer = mobileMenu?.querySelector('.mobile-menu-drawer')
+
+  function openMenu() {
+    if (!mobileMenu || !backdrop || !drawer || !mobileMenuBtn) return
+    mobileMenu.classList.remove('hidden')
+    mobileMenu.setAttribute('aria-hidden', 'false')
+    mobileMenuBtn.setAttribute('aria-expanded', 'true')
+    // Trigger animation
+    requestAnimationFrame(() => {
+      backdrop.classList.remove('opacity-0')
+      drawer.classList.remove('translate-x-full')
+    })
+    document.body.style.overflow = 'hidden'
+  }
+
+  function closeMenu() {
+    if (!mobileMenu || !backdrop || !drawer || !mobileMenuBtn) return
+    backdrop.classList.add('opacity-0')
+    drawer.classList.add('translate-x-full')
+    // Wait for transition
+    setTimeout(() => {
+      mobileMenu.classList.add('hidden')
+      mobileMenu.setAttribute('aria-hidden', 'true')
+      mobileMenuBtn.setAttribute('aria-expanded', 'false')
+      document.body.style.overflow = ''
+    }, 300)
+  }
+
+  mobileMenuBtn?.addEventListener('click', openMenu)
+  mobileMenuClose?.addEventListener('click', closeMenu)
+  backdrop?.addEventListener('click', closeMenu)
+  
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !mobileMenu?.classList.contains('hidden')) {
+      closeMenu()
+    }
+  })
+</script>
