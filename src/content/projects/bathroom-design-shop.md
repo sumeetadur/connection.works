@@ -32,27 +32,27 @@ media:
   #   alt: Walkthrough showing UI patterns for edge cases and error handling
   #   caption: Site quality (reusable UI patterns + edge cases)
   - kind: image
-    src: /portfolio/bathroom-design-shop/screens/p01-home-hero-and-cta.png
+    src: /portfolio/bathroom-design-shop/screens/home-hero-and-cta.avif
     alt: Homepage hero and call to action
     caption: Homepage hero and call to action
   - kind: image
-    src: /portfolio/bathroom-design-shop/screens/p02-image-gallery.png
+    src: /portfolio/bathroom-design-shop/screens/image-gallery.avif
     alt: Image gallery and layout stability
     caption: Image gallery and layout stability
   - kind: image
-    src: /portfolio/bathroom-design-shop/screens/p03-responsive-mobile.png
+    src: /portfolio/bathroom-design-shop/screens/responsive-mobile.avif
     alt: Responsive layout at mobile width
     caption: Responsive layout at mobile width
   - kind: image
-    src: /portfolio/bathroom-design-shop/screens/p04-form-ux.png
+    src: /portfolio/bathroom-design-shop/screens/form-ux.avif
     alt: Form UX and validation
     caption: Form UX and validation
   - kind: image
-    src: /portfolio/bathroom-design-shop/screens/p05-shared-ui-pattern.png
+    src: /portfolio/bathroom-design-shop/screens/shared-ui-pattern.avif
     alt: Shared UI pattern component
     caption: Shared UI pattern component
   - kind: image
-    src: /portfolio/bathroom-design-shop/screens/p06-seo-snippet.png
+    src: /portfolio/bathroom-design-shop/screens/seo-snippet.avif
     alt: SEO snippet
     caption: SEO snippet
 links:

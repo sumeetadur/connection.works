@@ -37,31 +37,31 @@ media:
   #   alt: Walkthrough showing dashboard donut chart filtering, organisation map, and asset charts
   #   caption: Dashboard + organisation map + asset charts (read-only walkthrough)
   - kind: image
-    src: /portfolio/l8log-web/screens/p09-dashboard-overview.png
+    src: /portfolio/l8log-web/screens/dashboard-overview.avif
     alt: Dashboard overview with charts
     caption: Dashboard overview with charts
   - kind: image
-    src: /portfolio/l8log-web/screens/p10-chart-tooltip.png
+    src: /portfolio/l8log-web/screens/chart-tooltip.avif
     alt: Chart tooltip and legend interactions
     caption: Chart tooltip and legend interactions
   - kind: image
-    src: /portfolio/l8log-web/screens/p11-map-view.png
+    src: /portfolio/l8log-web/screens/map-view.avif
     alt: Map view with markers
     caption: Map view with markers
   - kind: image
-    src: /portfolio/l8log-web/screens/p05-table-filters-search.png
+    src: /portfolio/l8log-web/screens/table-filters-search.avif
     alt: Data table filters and search
     caption: Data table filters and search
   - kind: image
-    src: /portfolio/l8log-web/screens/p08-detail-view.png
+    src: /portfolio/l8log-web/screens/detail-view.avif
     alt: Detail view with key metadata
     caption: Detail view with key metadata
   - kind: image
-    src: /portfolio/l8log-web/screens/p06-loading-skeletons.png
+    src: /portfolio/l8log-web/screens/loading-skeletons.avif
     alt: Loading skeletons and placeholders
     caption: Loading skeletons and placeholders
   - kind: image
-    src: /portfolio/l8log-web/screens/p01-nav-information-architecture.png
+    src: /portfolio/l8log-web/screens/nav-information-architecture.avif
     alt: Navigation and information architecture
     caption: Navigation and information architecture
   # - kind: image
@@ -73,15 +73,15 @@ media:
   #   alt: Consistent API error UI
   #   caption: Consistent API error UI
   - kind: image
-    src: /portfolio/l8log-web/screens/p12-responsive-layout.png
+    src: /portfolio/l8log-web/screens/responsive-layout.avif
     alt: Responsive layout at mobile width
     caption: Responsive layout at mobile width
   - kind: image
-    src: /portfolio/l8log-web/screens/p07-empty-state.png
+    src: /portfolio/l8log-web/screens/empty-state.avif
     alt: Empty state and blank slate UI
     caption: Empty state and blank slate UI
   - kind: image
-    src: /portfolio/l8log-web/screens/p03-no-access-state.png
+    src: /portfolio/l8log-web/screens/no-access-state.avif
     alt: No access state for a protected area
     caption: No access state for a protected area
 links:
